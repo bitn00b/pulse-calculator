@@ -1,17 +1,15 @@
 <script lang="ts">
   import { flipboard } from '@svelteuidev/motion';
+  import nf from '@tuplo/numberfmt';
+
+  const nfp = nf.partial('0,0.00');
 
   export let animate = false;
   export let number: number;
   export let locale = "en";
   export let notation: Intl.NumberFormatOptions['notation'] = "compact";
 
-  $: formattedNumber = number ? number.toLocaleString(locale, {
-    notation: notation,
-    compactDisplay: "short",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }) : '';
+  $: formattedNumber = number ? nfp(number) : '';
 </script>
 
 <style>

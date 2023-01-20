@@ -23,6 +23,8 @@
     "@svelteuidev/composables": "^0.7.7",
     "@svelteuidev/core": "^0.7.7",
     "@svelteuidev/motion": "^0.7.7",
-    "@svelteuidev/preprocessors": "^0.7.7"
+    "@svelteuidev/preprocessors": "^0.7.7",
+    "@tuplo/numberfmt": "^1.9.4",
+    "radix-icons-svelte": "^1.2.1"
   }
 }
