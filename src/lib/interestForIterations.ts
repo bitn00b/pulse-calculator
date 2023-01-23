@@ -53,23 +53,25 @@ export function interestForIterations (
     for (var day = 1; day <= daysToCalculate; day++) {
       currentDay++;
 
-      switch (additionalAmountInterval) {
-        case 'daily': {
-          currentValue += additionalAmount;
-          break;
-        }
-        case 'weekly': {
-          if (currentDay%7===0) {
+      if (currentValue < MAX_TO_COMPOUND) {
+        switch (additionalAmountInterval) {
+          case 'daily': {
             currentValue += additionalAmount;
+            break;
           }
-          break;
-        }
-        case 'monthly': {
-          if (currentDay%30===0) {
-            currentValue += additionalAmount;
+          case 'weekly': {
+            if (currentDay % 7 === 0) {
+              currentValue += additionalAmount;
+            }
+            break;
           }
+          case 'monthly': {
+            if (currentDay % 30 === 0) {
+              currentValue += additionalAmount;
+            }
 
-          break;
+            break;
+          }
         }
       }
 
@@ -107,7 +109,7 @@ export function interestForIterations (
     const amountAfterFees =
       startOfIteration + lastDay.profitUntilNow * 0.95 /* pulse withdraw */ * 0.91; /* VFX sell tax */
 
-    console.warn({iteration, lastDay, amountAfterFees});
+    // console.warn({iteration, lastDay, amountAfterFees});
     // console.table(interests);
 
     const profit = amountAfterFees - startOfIteration;

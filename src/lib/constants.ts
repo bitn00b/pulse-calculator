@@ -27,7 +27,7 @@ export const percentList = [
     value: 101.5
   }, {
     label: '2.0',
-    value: 102.0
+    value: 102
   }, {
     label: '2.5',
     value: 102.5

@@ -45,9 +45,10 @@ h1 {
 }
 
 #app {
-  min-width: calc(98% - 2rem);
-  max-width: calc(98% - 2rem);
-  padding: 1rem;
+  --app-padding: 0.5rem;
+  min-width: calc(98% - var(--app-padding)*2);
+  max-width: calc(98% - var(--app-padding)*2);
+  padding: var(--app-padding);
   margin: 0 auto;
 }
 

@@ -8,12 +8,18 @@
     iterations,
     percentADay
   } from "./store.js";
-  import { ActionIcon, Code, UnstyledButton } from "@svelteuidev/core";
+  import { ActionIcon, Code, Modal, UnstyledButton } from "@svelteuidev/core";
 
   import { Gear } from 'radix-icons-svelte';
   import SettingPanel from "./SettingPanel.svelte";
+  import { useViewportSize } from "@svelteuidev/composables";
 
   let opened = false;
+
+  const viewport = useViewportSize();
+  $: ({width, height} = $viewport);
+
+  $: size = width < 960 ? 'xs' : 'lg';
 </script>
 
 <div style="display: flex">
@@ -43,7 +49,11 @@
 </div>
 
 
-<SettingPanel bind:opened/>
+<Modal {opened} on:close={() => opened = false} title="Calculation Properties" size={size}>
+
+<SettingPanel />
+</Modal>
+
 
 
 <style lang="scss">

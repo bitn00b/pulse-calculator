@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Stack, Grid, Paper, Divider, Code } from "@svelteuidev/core";
+  import { Stack, Grid, Paper, Divider } from "@svelteuidev/core";
   import FormattedNumber from "./FormattedNumber.svelte";
   import { interestForIterations } from "./interestForIterations";
   import {
@@ -13,14 +13,12 @@
   } from "./store";
   import SettingPanel from "./SettingPanel.svelte";
   import SettingsReadOnlyPanel from "./SettingsReadOnlyPanel.svelte";
+  import { noConfigModal } from "./store.js";
 
-  // todo add additional money daily/weekly/monthly
   // todo counter till Feb 7
-  // prepare work for if referral link
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
-
 
   $: interestPerIteration = interestForIterations({
     iterationCount: $iterations,
@@ -28,39 +26,58 @@
     initial: $initialAmountSelected,
     percentADay: $percentADay,
     first70Days: $first70Days,
-    additionalAmount: $additionalAmount,
+    additionalAmount: $additionalAmount ?? 0,
     additionalAmountInterval: $additionalInterval
   });
   $: totalProfit = interestPerIteration.reduce((prev, cur) => {
     return prev + cur.profit;
   }, 0);
+  $: totalDays = interestPerIteration.reduce((prev, cur) => {
+    return prev + cur.interests.length;
+  }, 0);
+  $: totalAmountAtTheEnd = $initialAmountSelected + totalProfit;
 </script>
 
 <Stack>
   <Grid>
     <GridCol offsetLg={3} lg={6} xs={12}>
       <Paper>
-        <h2 style="margin-bottom: 0; margin-top:0">
-          Total interest / earnings: <br/><br/>
-          <b>$ <FormattedNumber animate={true} number={totalProfit} notation="standard"/></b>
+        <Grid>
+          <GridCol lg={6} xs={12}>
+            <div style="margin-top:0; word-wrap: break-word">
+              Amount at the End (after {totalDays} Days): <br/><b>$
+              <FormattedNumber animate={true} number={totalAmountAtTheEnd} notation="standard"/>
+            </b>
+            </div>
+          </GridCol>
+          <GridCol lg={6} xs={12}>
+            <div style="margin-top:0; word-wrap: break-word">
+              Total interest / earnings: <br/>
+              <b>$
+                <FormattedNumber animate={true} number={totalProfit} notation="standard"/>
+              </b> (<FormattedNumber
+                  animate={true}
+                  notation="standard"
+                  number={(100 / $initialAmountSelected) * totalProfit}
+              />
+              %)
 
-        </h2>
+            </div>
+          </GridCol>
+        </Grid>
 
-        Percentage profit:
-        <FormattedNumber
-            animate={true}
-            notation="standard"
-            number={(100 / $initialAmountSelected) * totalProfit}
-        />
-        %
-        <br/>
+
         <Divider variant='dotted'/>
 
-        <SettingsReadOnlyPanel/>
+        {#if $noConfigModal}
+
+          <SettingPanel/>
+        {:else}
+
+          <SettingsReadOnlyPanel/>
+        {/if}
+
       </Paper>
-    </GridCol>
-    <GridCol lg={8} xs={12}>
-      <SettingPanel/>
     </GridCol>
   </Grid>
 
@@ -70,7 +87,8 @@
         <GridCol xs={6} sm={4} lg={3}>
           Iteration: <b>{iteration.iteration}</b>
           - Starting with: <b>
-          $<FormattedNumber number={iteration.initial}/>
+          $
+          <FormattedNumber number={iteration.initial}/>
         </b><br/>
           <Paper>
             <div class="details">
@@ -150,7 +168,7 @@
   }
 
   .scroll {
-    height: 17.5rem;
+    height: 18rem;
     overflow: auto
   }
 
