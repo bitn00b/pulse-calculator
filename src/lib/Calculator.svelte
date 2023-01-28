@@ -1,82 +1,97 @@
 <script lang="ts">
-  import { Stack, Grid, Paper, Divider } from "@svelteuidev/core";
+  import { Alert, Badge, Divider, Grid, Paper, Stack, UnstyledButton } from "@svelteuidev/core";
   import FormattedNumber from "./FormattedNumber.svelte";
+  import TippingModal from "./TippingModal.svelte";
   import { interestForIterations } from "./interestForIterations";
-  import {
-    additionalAmount,
-    additionalInterval,
-    days,
-    first70Days,
-    initialAmountSelected,
-    iterations,
-    percentADay
-  } from "./store";
+  import { combinedData, days, initialInputDelayed, showTippingModal } from "./store";
   import SettingPanel from "./SettingPanel.svelte";
   import SettingsReadOnlyPanel from "./SettingsReadOnlyPanel.svelte";
-  import { noConfigModal } from "./store.js";
+  import { noConfigModal, showDisclaimer } from "./store.js";
+  import { InfoCircled } from "radix-icons-svelte";
 
-  // todo counter till Feb 7
+  // todo counter till Feb 7 or later
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
 
-  $: interestPerIteration = interestForIterations({
-    iterationCount: $iterations,
-    days: $days,
-    initial: $initialAmountSelected,
-    percentADay: $percentADay,
-    first70Days: $first70Days,
-    additionalAmount: $additionalAmount ?? 0,
-    additionalAmountInterval: $additionalInterval
-  });
+  $: interestPerIteration = interestForIterations($combinedData);
   $: totalProfit = interestPerIteration.reduce((prev, cur) => {
     return prev + cur.profit;
+  }, 0);
+
+  $: totalReferrerCut = interestPerIteration.reduce((prev, cur) => {
+    return prev + cur.referrerCutOfIteration;
   }, 0);
   $: totalDays = interestPerIteration.reduce((prev, cur) => {
     return prev + cur.interests.length;
   }, 0);
-  $: totalAmountAtTheEnd = $initialAmountSelected + totalProfit;
+  $: totalAmountAtTheEnd = $initialInputDelayed + totalProfit;
 </script>
 
 <Stack>
   <Grid>
     <GridCol offsetLg={3} lg={6} xs={12}>
       <Paper>
+        {#if $showDisclaimer}
+          <Alert icon={InfoCircled} title="Disclaimer" color="yellow" withCloseButton
+                 on:close={() => $showDisclaimer = false}>
+            This is not an official calculator of Pulse - These numbers are simulated and not a guarantee on returns. -
+            so keep that in mind :)
+          </Alert>
+          <br>
+        {:else}
+          <div class="disclaimer-box">
+            <UnstyledButton aria-label="Open user menu" on:click={() => $showDisclaimer = true}>
+              <Badge color="yellow" radius="sm" style="cursor: pointer">
+                Show Disclaimer
+              </Badge>
+            </UnstyledButton>
+
+          </div>
+
+        {/if}
         <Grid>
-          <GridCol lg={6} xs={12}>
-            <div style="margin-top:0; word-wrap: break-word">
-              Amount at the End (after {totalDays} Days): <br/><b>$
+          <GridCol lg={4} xs={12}>
+            <div class="top-label-tile">
+              Amount at the End: <br/><b>$
               <FormattedNumber animate={true} number={totalAmountAtTheEnd} notation="standard"/>
-            </b>
+            </b> ({totalDays} Days)
             </div>
           </GridCol>
-          <GridCol lg={6} xs={12}>
-            <div style="margin-top:0; word-wrap: break-word">
+          <GridCol lg={4} xs={12}>
+            <div class="top-label-tile">
               Total interest / earnings: <br/>
               <b>$
                 <FormattedNumber animate={true} number={totalProfit} notation="standard"/>
-              </b> (<FormattedNumber
+              </b>
+              (
+              <FormattedNumber
                   animate={true}
                   notation="standard"
-                  number={(100 / $initialAmountSelected) * totalProfit}
+                  number={(100 / $initialInputDelayed) * totalProfit}
               />
               %)
-
+            </div>
+          </GridCol>
+          <GridCol lg={4} xs={12}>
+            <div class="top-label-tile">
+              Your referrer receives 5% of Profit: <br/>
+              <b>$
+                <FormattedNumber animate={true} number={totalReferrerCut} notation="standard"/>
+              </b>
             </div>
           </GridCol>
         </Grid>
 
-
         <Divider variant='dotted'/>
 
         {#if $noConfigModal}
-
           <SettingPanel/>
         {:else}
-
           <SettingsReadOnlyPanel/>
         {/if}
 
+        More stats will be added in the future. :)
       </Paper>
     </GridCol>
   </Grid>
@@ -155,6 +170,15 @@
   </div>
 </Stack>
 
+<br/>
+<br/>
+
+<div class="fixed-footer" on:click={() => $showTippingModal = true}>
+  💸 If you like to tip BitNoob 🥰
+</div>
+
+<TippingModal />
+
 <style lang="scss">
   .config {
     display: flex;
@@ -187,6 +211,53 @@
 
     tr:nth-child(odd) {
       background: #AAAAAA30
+    }
+  }
+
+  .top-label-tile {
+    margin-top: 0;
+    word-wrap: break-word;
+    height: 4rem;
+    overflow-y: clip;
+  }
+
+  .disclaimer-box {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .fixed-footer {
+    position: fixed;
+    bottom: 0.35rem;
+    left: 0.25rem;
+    right: 0.25rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    user-select: none;
+
+    background: #7D7D7D44; // fallback if linear-gradient doesnt work
+    background: linear-gradient(
+                    to right bottom,
+                    rgba(255, 255, 255, 0.4),
+                    rgba(255, 255, 255, 0.2)
+    );
+    backdrop-filter: blur(1rem);
+
+    min-height: 3vh;
+    padding: 0.5rem;
+    z-index: 1;
+
+    border-radius: 0.5rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+    line-height: 16px;
+
+    &:hover {
+      cursor: pointer;
+        backdrop-filter: blur(2rem);
     }
   }
 </style>
