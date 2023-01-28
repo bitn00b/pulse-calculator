@@ -1,19 +1,25 @@
 <script lang="ts">
   import { Grid, NativeSelect, NumberInput, Switch } from "@svelteuidev/core";
   import {
-    initialAmountSelected,
-    iterations,
     additionalAmount,
+    additionalInterval,
     days,
     first70Days,
-    percentADay,
-    additionalInterval
+    initialAmountSelected,
+    iterations,
+    percentADay
   } from "./store";
   import { daysList, iterationsList, percentList } from "./constants.js";
   import { noConfigModal } from "./store.js";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
+
+  function changePercentPerDay (newValue: number) {
+    // it seems that setting it without setTimeout (chrome?) and / or svelte store
+    // and/or NativeSelect runs into a race condition and then it stays on the value before...yay
+    setTimeout(() => $percentADay = newValue);
+  }
 </script>
 
 <Grid>
@@ -31,7 +37,7 @@
   <GridCol xs={12} md={4}>
     <NativeSelect data={percentList}
                   label="Percent per Day"
-                  on:change={(e) => $percentADay = Number(e.target.value)}
+                  on:change={(e) => changePercentPerDay(Number(e.target.value))}
                   value={$percentADay}
     />
   </GridCol>

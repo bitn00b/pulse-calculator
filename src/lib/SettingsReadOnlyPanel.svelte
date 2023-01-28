@@ -12,14 +12,11 @@
 
   import { Gear } from 'radix-icons-svelte';
   import SettingPanel from "./SettingPanel.svelte";
-  import { useViewportSize } from "@svelteuidev/composables";
+  import { modalSize } from "./constants";
 
   let opened = false;
 
-  const viewport = useViewportSize();
-  $: ({width, height} = $viewport);
-
-  $: size = width < 960 ? 'xs' : 'lg';
+  $: size = $modalSize;
 </script>
 
 <div style="display: flex">
@@ -32,7 +29,7 @@
         </div>
 
         {#if $first70Days}
-          <div>First Iteration 70 Days | </div>
+          <div>First Iteration 70 Days |</div>
         {/if}
 
         {#if $additionalAmount}
@@ -50,10 +47,8 @@
 
 
 <Modal {opened} on:close={() => opened = false} title="Calculation Properties" size={size}>
-
-<SettingPanel />
+  <SettingPanel/>
 </Modal>
-
 
 
 <style lang="scss">
