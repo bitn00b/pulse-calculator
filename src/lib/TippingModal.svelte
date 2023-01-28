@@ -23,21 +23,24 @@
   }
 </script>
 
-<Modal {opened} on:close={() => $showTippingModal = false} title="If you like to tip :)" {size}>
-  <Alert title="Beware of the selected chain">
-    This Wallet is on:
-    <Code>ETH</Code>, <Code>BSC</Code>, <Code>Polygon</Code> and <Code>Arbitrum</Code>
-  </Alert>
+<Modal {opened} on:close={() => $showTippingModal = false} {size}>
+  <h3 style="margin-top: -3rem">Thank you for clicking on 'tip Bitnoob'!</h3>
 
-  <br/>
-  If you have any spare <Code>ETH</Code>, <Code>BNB</Code>, <Code>BUSD</Code>, <Code>USDT</Code> or <Code>VFX</Code>
-  laying around I'll gladly accept em :)
-
+  A few people mentioned they would like a way to show their appreciation for the work I've done so here it is :)
   <br/>
   <br/>
+  If you wish, you can send any amount of <Code>ETH</Code>, <Code>BNB</Code>, <Code>BUSD</Code>, <Code>USDT</Code>,
+  <Code>VFX</Code> to the provided wallet address.
 
-  <div style="display: flex; gap: 0.5rem">
-    <input readonly aria-readonly="true" style="flex: 1" value={tipWallet}/>
+  <br/>
+  <br/>
+  I thank you and appreciate your kindness.
+
+  <br/>
+  <br/>
+
+  <div class="input-group">
+    <input readonly aria-readonly="true" style="flex: 1; margin-left: 0.5rem" value={tipWallet}/>
 
 
     <ActionIcon color="teal" size="lg" variant="light"
@@ -45,4 +48,20 @@
       <CopyIcon></CopyIcon>
     </ActionIcon>
   </div>
+
+  <br/>
+
+  <Alert title="This wallet is an EVM wallet and compatible to the following chains:">
+    <Code>ETH</Code>, <Code>BSC</Code>, <Code>Polygon</Code> and <Code>Arbitrum</Code>
+  </Alert>
+
+
 </Modal>
+
+<style lang="scss">
+  .input-group {
+    display: flex;
+    gap: 0.5rem;
+    background: #535353;
+  }
+</style>
