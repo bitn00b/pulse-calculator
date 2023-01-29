@@ -2,27 +2,24 @@
   import { Alert, Badge, Divider, Grid, Paper, Stack, UnstyledButton } from "@svelteuidev/core";
   import FormattedNumber from "./FormattedNumber.svelte";
   import TippingModal from "./TippingModal.svelte";
-  import { days, initialInputDelayed, interestPerIteration, totalProfit } from "./store";
+  import { initialInputDelayed, interestPerIteration, totalProfit } from "./store";
   import SettingPanel from "./SettingPanel.svelte";
   import SettingsReadOnlyPanel from "./SettingsReadOnlyPanel.svelte";
   import { InfoCircled } from "radix-icons-svelte";
   import FloatingFooter from "./Footer.svelte";
   import HeaderRow from "./HeaderRow.svelte";
-  import { noConfigModal, showDisclaimer } from "./settings.js";
+  import { enableAnimations, noConfigModal, showDisclaimer } from "./settings.js";
+  import { days } from "./store.js";
 
   // todo counter till Feb 7 or later
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
 
-
   $: totalReferrerCut = $interestPerIteration.reduce((prev, cur) => {
     return prev + cur.referrerCutOfIteration;
   }, 0);
-  $: totalDays = $interestPerIteration.reduce((prev, cur) => {
-    return prev + cur.interests.length;
-  }, 0);
-  $: totalAmountAtTheEnd = $initialInputDelayed + $totalProfit;
+
 </script>
 
 <HeaderRow/>
@@ -57,21 +54,24 @@
           <Grid>
             <GridCol lg={4} xs={12}>
               <div class="top-label-tile">
-                Amount at the End: <br/><b>$
-                <FormattedNumber animate={true} number={totalAmountAtTheEnd} notation="standard"/>
-              </b> ({totalDays} Days)
+                Total Profit: <br/>
+                <b>$
+                  <FormattedNumber animate={$enableAnimations} number={$totalProfit} notation="standard"/>
+                </b>
+                <span>(<FormattedNumber
+                    animate={$enableAnimations}
+                    notation="standard"
+                    number={(100 / $initialInputDelayed) * $totalProfit}
+                /> %)</span>
               </div>
             </GridCol>
             <GridCol lg={6} xs={12}>
               <div class="top-label-tile">
-                Your referrer receives 5% of Profit: <br/>
+                Total referrer Profit: <br/>
                 <b>$
-                  <FormattedNumber animate={true} number={totalReferrerCut} notation="standard"/>
-                </b>
+                  <FormattedNumber animate={$enableAnimations} number={totalReferrerCut} notation="standard"/>
+                </b> (5% daily)
               </div>
-            </GridCol>
-
-            <GridCol lg={2} xs={12}>
             </GridCol>
           </Grid>
 
@@ -82,7 +82,8 @@
           {:else}
             <SettingsReadOnlyPanel/>
           {/if}
-
+          <br/>
+          <br/>
           More stats will be added in the future. :)
         </Paper>
       </div>

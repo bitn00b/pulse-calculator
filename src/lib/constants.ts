@@ -39,6 +39,20 @@ export const percentList = [
 
 
 
-const viewport = useViewportSize();
+export const viewport = useViewportSize();
 
-export const modalSize = derived(viewport, ({width}) => width < 500 ? '100%' : 'lg');
+
+let lastWidth = 0;
+const widthChanged = derived(viewport, ({width}, set) => {
+  if (lastWidth !== width) {
+    set(width);
+    lastWidth = width;
+  }
+});
+
+export const isSmallDevice = derived(widthChanged, width => {
+  return width < 500;
+})
+
+
+export const modalSize = derived(isSmallDevice, (smallDevice) => smallDevice ? '100%' : 'lg');
