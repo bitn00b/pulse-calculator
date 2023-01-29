@@ -10,7 +10,7 @@
     percentADay
   } from "./store";
   import { daysList, iterationsList, percentList } from "./constants.js";
-  import { noConfigModal } from "./store.js";
+  import { noConfigModal } from "./settings.js";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
