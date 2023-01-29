@@ -1,6 +1,8 @@
 import type { InterestForIterationSettings } from "./store";
 
-const MAX_TO_COMPOUND = 100_000;
+const MAX_TO_COMPOUND_NOVIP = 100_000;
+const MAX_TO_COMPOUND_VIP = 500_000;
+
 // 0.XX because its a multiplicator
 const VFX_SELL_TAX = 0.91; // 9%
 const PULSE_WITHDRAW_TAX = 0.95; // 5%
@@ -27,29 +29,42 @@ export type IterationResult = {
   profit: number;
 }
 
-export function interestForIterations (
+export function *interestForIterations (
   {
     iterationCount = 1,
-    days,
+    pulseVip,
     initial,
     percentADay,
     first70Days,
     additionalAmountInterval,
-    additionalAmount
+    additionalAmount,
+    additionalLimit
   }: InterestForIterationSettings
-): IterationResult[] {
-  const result: IterationResult[] = [];
-
+): Iterable<IterationResult[]> {
   if (!initial) {
-    return result;
+    return [];
   }
 
+  if (!additionalAmount) {
+    additionalAmount = 0;
+  }
+
+  if (!additionalLimit) {
+    additionalLimit = 0;
+  }
+
+  const maxDays = pulseVip ? 100 : 60;
+  const MAX_TO_COMPOUND = pulseVip ? MAX_TO_COMPOUND_VIP : MAX_TO_COMPOUND_NOVIP;
+
   let currentDay = 0; // maybe needs a better name - make a PR^^
+
+  let additionalIntervalCounter = 0;
+  const result = [];
 
   for (let iteration = 1; iteration <= iterationCount; iteration++) {
     const startOfIteration = initial;
 
-    const daysToCalculate = iteration === 1 && days === 60 && first70Days ? 70 : days;
+    const daysToCalculate = iteration === 1 && maxDays === 60 && first70Days ? 70 : maxDays;
 
     const interests: InterestEntry[] = [];
 
@@ -57,23 +72,28 @@ export function interestForIterations (
 
     let currentValue = startOfIteration;
     let lastDay: InterestEntry;
+
     for (var day = 1; day <= daysToCalculate; day++) {
       currentDay++;
 
-      if (currentValue < MAX_TO_COMPOUND) {
+      if (currentValue < MAX_TO_COMPOUND
+        && (additionalLimit === 0 || additionalIntervalCounter <= additionalLimit)) {
         switch (additionalAmountInterval) {
           case 'daily': {
+            additionalIntervalCounter++;
             currentValue += additionalAmount;
             break;
           }
           case 'weekly': {
             if (currentDay % 7 === 0) {
+            additionalIntervalCounter++;
               currentValue += additionalAmount;
             }
             break;
           }
           case 'monthly': {
             if (currentDay % 30 === 0) {
+            additionalIntervalCounter++;
               currentValue += additionalAmount;
             }
 
@@ -139,6 +159,8 @@ export function interestForIterations (
     });
 
     initial = amountAfterFees < MAX_TO_COMPOUND ? amountAfterFees : MAX_TO_COMPOUND;
+
+    yield [...result];
   }
 
   return result;

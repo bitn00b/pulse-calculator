@@ -3,14 +3,15 @@
   import {
     additionalAmount,
     additionalInterval,
-    days,
     first70Days,
     initialAmountSelected,
     iterations,
-    percentADay
+    percentADay,
+    pulseVip
   } from "./store";
-  import { daysList, iterationsList, percentList } from "./constants.js";
+  import { iterationsList, percentList } from "./constants.js";
   import { noConfigModal } from "./settings.js";
+  import { additionalIntervalLabel, additionalLimit } from "./store.js";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
@@ -42,15 +43,13 @@
     />
   </GridCol>
   <GridCol xs={12} md={4}>
-    <NativeSelect data={daysList}
-                  label="Days"
-
-                  on:change={(e) => $days = Number(e.target.value)}
-                  value={$days.toString()}
+    <Switch bind:checked={$pulseVip}
+            label="Pulse VIP"
     />
+
   </GridCol>
 
-  {#if $days === 60}
+  {#if !$pulseVip}
     <GridCol xs={12} md={8} style="align-self: end;padding-bottom: 0.75rem;">
       <Switch bind:checked={$first70Days} label="First Iteration 70 Days?" class="inline-flex"/>
     </GridCol>
@@ -58,21 +57,33 @@
 
 </Grid>
 
-<h4>Additional Deposits</h4>
+<h4 style="margin-bottom: 0">Additional Deposits</h4>
 <Grid>
-  <GridCol xs={12} md={4}>
+  <GridCol xs={12} md={4} style="align-self: end">
     <NumberInput placeholder="Amount" label="Amount" bind:value={$additionalAmount}/>
 
   </GridCol>
-  <GridCol xs={12} md={4}>
+  <GridCol xs={12} md={4} style="align-self: end">
     <NativeSelect data={['daily', 'weekly', 'monthly']}
                   label="Interval"
                   bind:value={$additionalInterval}
     />
   </GridCol>
+    <GridCol xs={12} md={4} style="align-self: end">
+      <NumberInput placeholder={$additionalIntervalLabel}
+                   label="Stop after X {$additionalIntervalLabel}"
+                   description="0 = no limit"
+                   bind:value={$additionalLimit}/>
+  </GridCol>
 </Grid>
 
-<br />
+<br/>
 <Switch bind:checked={$noConfigModal}
         label="Always show these Properties on Main Page"
         class="inline-flex"/>
+<br/>
+<!--
+<Switch bind:checked={$enableAnimations}
+        label="Enable Animations"
+        class="inline-flex"/>
+-->
