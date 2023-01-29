@@ -22,6 +22,7 @@
 
     display: flex;
     gap: 0.5rem;
+    z-index: 2;
 
 
     overflow: clip;
