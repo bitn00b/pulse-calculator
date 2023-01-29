@@ -1,6 +1,6 @@
 import { derived, writable } from "svelte/store";
 import { debounce } from 'svelte-reactive-debounce'
-import { localStoredSetting } from "./store-functions";
+import { interestForIterations } from "./interestForIterations";
 
 export type InterestForIterationSettings = {
   iterationCount: number;
@@ -26,9 +26,6 @@ export const showTippingModal = writable(false);
 
 // Settings
 
-export const noConfigModal = localStoredSetting('noConfigModal', 'false', val => val === 'true');
-export const showDisclaimer = localStoredSetting('showDisclaimer', 'true', val => val === 'true');
-
 export const initialInputDelayed = debounce(initialAmountSelected, 250);
 
 export const combinedData = derived([
@@ -43,7 +40,10 @@ export const combinedData = derived([
   iterationCount, days, initial, percentADay, first70Days, additionalAmount, additionalAmountInterval
 }) as InterestForIterationSettings);
 
-combinedData.subscribe(d => {
-  console.info(d);
-})
 
+export const interestPerIteration = derived(combinedData, values => interestForIterations(values));
+
+
+export const totalProfit = derived(interestPerIteration, values => values.reduce((prev, cur) => {
+    return prev + cur.profit;
+  }, 0));
