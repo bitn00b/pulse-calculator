@@ -1,7 +1,7 @@
 <script>
   import { ActionIcon } from '@svelteuidev/core';
 
-  import { isDarkMode } from "./settings.js";
+  import { isDarkMode } from "./logic/settings.ts";
   import { Moon, Sun } from "radix-icons-svelte";
 </script>
 

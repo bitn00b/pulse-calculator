@@ -29,7 +29,7 @@ export type IterationResult = {
   profit: number;
 }
 
-export function *interestForIterations (
+export function interestForIterations (
   {
     iterationCount = 1,
     pulseVip,
@@ -40,7 +40,7 @@ export function *interestForIterations (
     additionalAmount,
     additionalLimit
   }: InterestForIterationSettings
-): Iterable<IterationResult[]> {
+): IterationResult[] {
   if (!initial) {
     return [];
   }
@@ -160,7 +160,7 @@ export function *interestForIterations (
 
     initial = amountAfterFees < MAX_TO_COMPOUND ? amountAfterFees : MAX_TO_COMPOUND;
 
-    yield [...result];
+    // yield [...result];
   }
 
   return result;

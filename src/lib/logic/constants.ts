@@ -6,17 +6,6 @@ export const iterationsList = [1, 2, 3, 4, 6, 12, 18].map(i => ({
   value: i.toString()
 }));
 
-export const daysList = [
-  {
-    label: '60',
-    value: '60'
-  },
-  {
-    label: '100',
-    value: '100'
-  }
-];
-
 export const percentList = [
   {
     label: '0.5',

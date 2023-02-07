@@ -1,7 +1,6 @@
 import { derived, writable } from "svelte/store";
 import { debounce } from 'svelte-reactive-debounce'
 import type { IterationResult } from "./interestForIterations";
-import { interestForIterations } from "./interestForIterations";
 import type { Readable } from "svelte/types/runtime/store";
 import { isSmallDevice } from "./constants";
 
@@ -43,7 +42,14 @@ export const combinedData = derived([
   additionalInterval,
   debounce(additionalLimit, 250)
 ], ([iterationCount, pulseVip, initial, percentADay, first70Days, additionalAmount, additionalAmountInterval, additionalLimit]) => ({
-  iterationCount, pulseVip, initial, percentADay, first70Days, additionalAmount, additionalAmountInterval, additionalLimit
+  iterationCount,
+  pulseVip,
+  initial,
+  percentADay,
+  first70Days,
+  additionalAmount,
+  additionalAmountInterval,
+  additionalLimit
 }) as InterestForIterationSettings);
 
 function delayMsAsync (ms: number) {
@@ -70,28 +76,41 @@ function delayedIterationReadableStore<TSource, TIterationResult> (
   return writableStore;
 }
 
+// dev mode doesn't work in firefox, some "import * from" not supported I guess?
+// and vite not compiling it to es during dev-mode - couldnt find any config for it yet
+const worker = new Worker(
+  new URL('./interestCalculatorWorker.ts', import.meta.url),
+  {type: 'module'}
+);
+
 export const interestPerIteration: Readable<IterationResult[]> = derived(
   [combinedData, isSmallDevice], ([values, smallDevice], set) => {
     const delay = smallDevice ? 500 : 125;
 
-    async function innerAsync () {
-      for (let results of interestForIterations(values)) {
-        set(results);
 
-        // slow phone rendering/calculation improvements / not enough yet
-        // next time a web worker is needed per calculation iteration
-        await delayMsAsync(delay);
-      }
+    function workerResultCallback (ev) {
+      console.info('received data', ev.data);
+      set(ev.data);
     }
 
     set([]);
-    // ugly but derived doesn't allow Promises in the type... why? =D
-    innerAsync();
+    worker.addEventListener('message', workerResultCallback);
+
+    worker.postMessage(values);
+
+
+    return () => {
+      worker.removeEventListener('message', workerResultCallback);
+    }
   });
 
 export const totalProfit = derived(interestPerIteration, values => values.reduce((prev, cur) => {
   return prev + cur.profit;
 }, 0));
+
+export const totalReferrerCut = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
+    return prev + cur.referrerCutOfIteration;
+  }, 0));
 
 export const days = derived(pulseVip, vip => vip ? 100 : 60);
 export const additionalIntervalLabel = derived(additionalInterval, interval => {

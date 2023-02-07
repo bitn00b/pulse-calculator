@@ -1,15 +1,13 @@
 <script lang="ts">
-  import { flipboard } from '@svelteuidev/motion';
-  import nf from '@tuplo/numberfmt';
-
-  const nfp = nf.partial('0,0.00');
+  import AnimatedFlipboardText from "./AnimatedFlipboardText.svelte";
+  import { formatNumberUSD } from "../logic/utils";
 
   export let animate = false;
   export let number: number;
   export let locale = "en";
   export let notation: Intl.NumberFormatOptions['notation'] = "compact";
 
-  $: formattedNumber = number ? nfp(number) : '';
+  $: formattedNumber = formatNumberUSD( number);
 </script>
 
 <style>
@@ -20,7 +18,9 @@
 
 {#if animate}
   {#key formattedNumber}
-  <span in:flipboard={{ duration: 600 }} out:flipboard={{ duration: 200 }}>{formattedNumber}</span>
+    <AnimatedFlipboardText>
+      {formattedNumber}
+    </AnimatedFlipboardText>
   {/key}
 {:else}
   <span>{formattedNumber}</span>

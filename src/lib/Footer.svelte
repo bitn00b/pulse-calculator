@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { showTippingModal } from "./store.js";
+  import { showTippingModal } from "./logic/store.js";
 </script>
 
 <div class="fixed-footer">

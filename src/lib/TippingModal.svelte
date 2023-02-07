@@ -1,16 +1,13 @@
 <script lang="ts">
   import { ActionIcon, Alert, Code, CopyIcon, Modal } from "@svelteuidev/core";
-  import { showTippingModal } from "./store";
-  import { modalSize } from "./constants";
+  import { showTippingModal } from "./logic/store";
+  import { modalSize } from "./logic/constants";
   import { copyText } from 'svelte-copy';
-  import { useViewportSize } from "@svelteuidev/composables";
-
+  import wallet from "../assets/wallet.png";
 
   const tipWallet = '0x0eB4B25D17c72D435ca430c233E9f64Ac409efe4';
 
   $: opened = $showTippingModal;
-
-  const viewport = useViewportSize();
   $: size = $modalSize;
 
   async function handleCopyToClipboard () {
@@ -29,8 +26,8 @@
   A few people mentioned they would like a way to show their appreciation for the work I've done so here it is :)
   <br/>
   <br/>
-  If you wish, you can send any amount of <Code>ETH</Code>, <Code>BNB</Code>, <Code>BUSD</Code>, <Code>USDT</Code>,
-  <Code>VFX</Code> to the provided wallet address.
+  If you wish, you can send any amount of <Code>VFX</Code>, <Code>ETH</Code>, <Code>BNB</Code>, <Code>BUSD</Code>, <Code>USDT</Code>,
+  <Code>POM</Code> to the provided wallet address.
 
   <br/>
   <br/>
@@ -52,10 +49,11 @@
   <br/>
 
   <Alert title="This wallet is an EVM wallet and compatible to the following chains:">
-    <Code>ETH</Code>, <Code>BSC</Code>, <Code>Polygon</Code> and <Code>Arbitrum</Code>
+    <Code>ETH</Code>, <Code>BSC</Code>, <Code>Polygon</Code>, <Code>Arbitrum</Code>, <Code>POM</Code>
   </Alert>
 
-
+  <br/>
+  <img src={wallet}  class="centered-qr"/>
 </Modal>
 
 <style lang="scss">
@@ -63,5 +61,11 @@
     display: flex;
     gap: 0.5rem;
     background: #535353;
+  }
+
+  .centered-qr {
+    display: block;
+    width: 256px;
+    margin: 0 auto;
   }
 </style>

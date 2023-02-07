@@ -8,10 +8,10 @@
     iterations,
     percentADay,
     pulseVip
-  } from "./store";
-  import { iterationsList, percentList } from "./constants.js";
-  import { noConfigModal } from "./settings.js";
-  import { additionalIntervalLabel, additionalLimit } from "./store.js";
+  } from "./logic/store";
+  import { iterationsList, percentList } from "./logic/constants.js";
+  import { noConfigModal } from "./logic/settings.js";
+  import { additionalIntervalLabel, additionalLimit } from "./logic/store.js";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
@@ -24,18 +24,18 @@
 </script>
 
 <Grid>
-  <GridCol xs={12} md={4}>
+  <GridCol xs={12} sm={4}>
     <NumberInput placeholder="Initial Amount" label="Initial Amount"
                  bind:value={$initialAmountSelected}/>
   </GridCol>
-  <GridCol xs={12} sm={4} md={4}>
+  <GridCol xs={12} sm={4}>
     <NativeSelect data={iterationsList}
                   label="Iterations"
                   on:change={(e) => $iterations = Number(e.target.value)}
                   value={$iterations.toString()}
     />
   </GridCol>
-  <GridCol xs={12} md={4}>
+  <GridCol xs={12} sm={4}>
     <NativeSelect data={percentList}
                   label="Percent per Day"
                   on:change={(e) => changePercentPerDay(Number(e.target.value))}
@@ -44,7 +44,7 @@
   </GridCol>
   <GridCol xs={12} md={4}>
     <Switch bind:checked={$pulseVip}
-            label="Pulse VIP"
+            label="Pulse VIP [100 Days | 500k limit]"
     />
 
   </GridCol>
@@ -76,6 +76,19 @@
                    bind:value={$additionalLimit}/>
   </GridCol>
 </Grid>
+
+<h4 style="margin-bottom: 0">Withdraw Settings (soon)</h4>
+<!--
+<Grid>
+  <GridCol xs={12} md={4} style="align-self: end">
+    The Slider <br/>
+    X% stays in VFX <br/>
+    Y% keeps used in USDT  <br/>
+
+  </GridCol>
+
+</Grid>
+-->
 
 <br/>
 <Switch bind:checked={$noConfigModal}

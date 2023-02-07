@@ -26,8 +26,10 @@
     "@svelteuidev/motion": "0.8.0",
     "@svelteuidev/preprocessors": "0.8.0",
     "@tuplo/numberfmt": "1.9.4",
+    "dayjs": "^1.11.7",
     "radix-icons-svelte": "1.2.1",
     "rxjs": "7.8.0",
+    "svelte-countdown": "^1.1.2",
     "svelte-reactive-debounce": "0.0.2"
   }
 }
