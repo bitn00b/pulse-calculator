@@ -22,7 +22,7 @@
   $: iterationSelectList = [
     {
       label: 'Summary',
-      value: -1
+      value: '-1'
     },
     ...$interestPerIteration.map((value, index) => {
       return {
@@ -31,7 +31,7 @@
       };
     })];
 
-  let selectedIteration = -1;
+  let selectedIteration = '-1';
 
   $: selectedIterationObj = $interestPerIteration?.[selectedIteration];
 </script>
@@ -113,10 +113,12 @@
 
       <br/>
 
-      {#if selectedIterationObj}
-        <IterationTile iteration={selectedIterationObj}></IterationTile>
-      {:else}
+      {#if selectedIteration === '-1'}
         <SummaryCalculation/>
+      {:else}
+        {#if selectedIterationObj}
+          <IterationTile iteration={selectedIterationObj}></IterationTile>
+        {/if}
       {/if}
     </GridCol>
   </Grid>

@@ -8,6 +8,7 @@
   import AnimatedFlipboardText from "./components/AnimatedFlipboardText.svelte";
   import { isSmallDevice, modalSize } from "./logic/constants.js";
   import { formatNumber } from "./logic/utils.js";
+  import { InfoCircled } from "radix-icons-svelte";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
@@ -70,7 +71,7 @@
 <div class="fixed-header">
   <div class="grid-styles">
     <Grid>
-      <GridCol offsetLg={2} lg={10} xs={12}>
+      <GridCol offsetLg={2} lg={8} xs={12}>
         <div class="inner-content {$isSmallDevice ? 'small-device' : ''}">
           <Grid>
             <GridCol lg={5} xs={6} style="padding: 8px">
@@ -84,23 +85,27 @@
             </GridCol>
 
             <GridCol lg={7} xs={6} style="padding: 8px">
-              {#if !$untilPublicStart.inThePast}
-                {#if $untilPublicStart.today}
-                  🚀 T-O-D-A-Y 🚀
-                {:else}
-                  {#key $untilPublicStart.formattedNumber}
-                    <UnstyledButton aria-label="Open Countdown Dialog"
-                                    on:click={() => showCountdownDialog = true}>
-                      <Badge size="lg" radius="sm" style="cursor: pointer">
-                        Countdown: ⏰
-                        <AnimatedFlipboardText>
-                          {$untilPublicStart.formattedNumber}
-                        </AnimatedFlipboardText>
-                      </Badge>
-                    </UnstyledButton>
-                  {/key}
+              <div class="grid-cell-2">
+                {#if !$untilPublicStart.inThePast}
+                  {#if $untilPublicStart.today}
+                    🚀 T-O-D-A-Y 🚀
+                  {:else}
+                    {#key $untilPublicStart.formattedNumber}
+                      <UnstyledButton aria-label="Open Countdown Dialog"
+                                      on:click={() => showCountdownDialog = true}>
+
+                        <Badge size="lg" radius="sm" variant="outline"
+                               style="cursor: pointer; padding-left: 0.25rem; padding-right: 0.25rem"> 🚀⏰
+                          <AnimatedFlipboardText>
+                            {$untilPublicStart.formattedNumber}
+                          </AnimatedFlipboardText>
+                        </Badge>
+                        <InfoCircled size={14} style="vertical-align: middle"/>
+                      </UnstyledButton>
+                    {/key}
+                  {/if}
                 {/if}
-              {/if}
+              </div>
             </GridCol>
           </Grid>
         </div>
@@ -200,8 +205,14 @@
   .inner-content {
     position: relative;
 
+
     &:not(.small-device) {
-      height: 1.5rem;
+      height: 1.65rem;
+
+
+      .grid-cell-2 {
+        text-align: right;
+      }
     }
 
     overflow: hidden;

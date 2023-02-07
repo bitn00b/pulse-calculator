@@ -1,5 +1,6 @@
 import { derived } from "svelte/store";
 import { useViewportSize } from "@svelteuidev/composables";
+import { theme } from "@svelteuidev/core";
 
 export const iterationsList = [1, 2, 3, 4, 6, 12, 18].map(i => ({
   label: i.toString(),
@@ -30,6 +31,7 @@ export const percentList = [
 
 export const viewport = useViewportSize();
 
+const xsBreakpoint = theme.breakpoints.xs.value;
 
 let lastWidth = 0;
 const widthChanged = derived(viewport, ({width}, set) => {
@@ -40,7 +42,7 @@ const widthChanged = derived(viewport, ({width}, set) => {
 });
 
 export const isSmallDevice = derived(widthChanged, width => {
-  return width < 500;
+  return width < xsBreakpoint;
 })
 
 
