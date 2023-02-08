@@ -1,13 +1,14 @@
 import type { InterestForIterationSettings } from "./store";
+import { nanoid } from "nanoid";
 
 const MAX_TO_COMPOUND_NOVIP = 100_000;
 const MAX_TO_COMPOUND_VIP = 500_000;
 
 // 0.XX because its a multiplicator
 const VFX_SELL_TAX = 0.91; // 9%
-const PULSE_WITHDRAW_TAX = 0.95; // 5%
+const PULSE_WITHDRAW_FEE = 0.95; // 5%
 
-// the value is caculated alone so no 0.995 thing
+// the value is calculated alone so no 0.995 thing
 const REFERRER_CUT = 0.05;
 
 export type InterestEntry = {
@@ -24,9 +25,14 @@ export type IterationResult = {
   iteration: number;
   interests: InterestEntry[];
   amountAfterFees: number;
+  days: number;
   initial: number;
+  amountAfterAllDays: number;
+  withdrawFee: number;
+  sellTax: number;
   referrerCutOfIteration: number;
   profit: number;
+  uuid: string;
 }
 
 export function interestForIterations (
@@ -45,6 +51,8 @@ export function interestForIterations (
     return [];
   }
 
+  percentADay /= 100.0;
+
   if (!additionalAmount) {
     additionalAmount = 0;
   }
@@ -59,7 +67,7 @@ export function interestForIterations (
   let currentDay = 0; // maybe needs a better name - make a PR^^
 
   let additionalIntervalCounter = 0;
-  const result = [];
+  const result: IterationResult[] = [];
 
   for (let iteration = 1; iteration <= iterationCount; iteration++) {
     const startOfIteration = initial;
@@ -76,6 +84,7 @@ export function interestForIterations (
     for (var day = 1; day <= daysToCalculate; day++) {
       currentDay++;
 
+      // additional deposits logic
       if (currentValue < MAX_TO_COMPOUND
         && (additionalLimit === 0 || additionalIntervalCounter <= additionalLimit)) {
         switch (additionalAmountInterval) {
@@ -86,14 +95,14 @@ export function interestForIterations (
           }
           case 'weekly': {
             if (currentDay % 7 === 0) {
-            additionalIntervalCounter++;
+              additionalIntervalCounter++;
               currentValue += additionalAmount;
             }
             break;
           }
           case 'monthly': {
             if (currentDay % 30 === 0) {
-            additionalIntervalCounter++;
+              additionalIntervalCounter++;
               currentValue += additionalAmount;
             }
 
@@ -106,23 +115,33 @@ export function interestForIterations (
       const canCompound = startedWith < MAX_TO_COMPOUND;
       let profitOfThisDay = 0;
 
+      // console.info('started with', startedWith)
+
       if (canCompound) {
-        currentValue = (currentValue * percentADay) / 100;
-
-        profitOfThisDay = currentValue - startedWith;
-
-        if (currentValue > MAX_TO_COMPOUND) {
-          currentValue = MAX_TO_COMPOUND;
-        }
+        profitOfThisDay = (currentValue * percentADay) - startedWith;
       } else {
-        profitOfThisDay = (percentADay / 100 - 1) * currentValue;
+        // won't compound but still profit :)
+        profitOfThisDay = (percentADay - 1) * currentValue;
       }
 
+      // console.info('profit of this day', profitOfThisDay);
+
       const referrerCut = profitOfThisDay * REFERRER_CUT;
+      // console.info('referrercut', referrerCut);
 
       profitOfThisDay -= referrerCut;
 
+      // console.info('profit after referrercut', profitOfThisDay);
+
       profitUntilNow += profitOfThisDay;
+
+      if (canCompound) {
+        if (currentValue > MAX_TO_COMPOUND) {
+          currentValue = MAX_TO_COMPOUND;
+        } else {
+          currentValue += profitOfThisDay;
+        }
+      }
 
       const interestEntry = {
         day,
@@ -134,12 +153,22 @@ export function interestForIterations (
         profitUntilNow,
       };
 
+      // console.info(interestEntry)
+
       lastDay = interestEntry;
       interests.push(interestEntry);
     }
 
-    const amountAfterFees = startOfIteration + lastDay.profitUntilNow
-      * PULSE_WITHDRAW_TAX /* pulse withdraw */ * VFX_SELL_TAX; /* VFX sell tax */
+    const amountAfterAllDays = startOfIteration + profitUntilNow;
+
+    const amountAfterWithdrawFee = amountAfterAllDays * PULSE_WITHDRAW_FEE;
+
+    const withdrawFee = amountAfterAllDays - amountAfterWithdrawFee;
+
+    const amountAfterFees = amountAfterWithdrawFee * VFX_SELL_TAX;
+
+    const sellTax = amountAfterWithdrawFee - amountAfterFees; // might need to refactor this ... and create tests xD
+
 
     const referrerCutOfIteration = interests.reduce((prev, cur) => {
       return prev + cur.referrerCut;
@@ -150,9 +179,14 @@ export function interestForIterations (
     const profit = amountAfterFees - startOfIteration;
 
     result.push({
+      uuid: nanoid(),
       iteration,
       interests,
       amountAfterFees,
+      amountAfterAllDays,
+      withdrawFee,
+      sellTax,
+      days: daysToCalculate,
       initial: startOfIteration,
       referrerCutOfIteration,
       profit,

@@ -1,7 +1,7 @@
 import { interestForIterations } from "./interestForIterations";
 import { nanoid } from 'nanoid';
 
-function delayMsAsync (ms: number) {
+export function delayMsAsync (ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
