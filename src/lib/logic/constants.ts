@@ -24,6 +24,9 @@ export const percentList = [
   }, {
     label: '2.5',
     value: 102.5
+  }, {
+    label: 'Daily Random',
+    value: -1
   }
 ];
 

@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { Alert, Badge, Divider, Grid, Paper, Stack, UnstyledButton } from "@svelteuidev/core";
+  import { Alert, Badge, Button, Divider, Grid, Paper, Stack, UnstyledButton } from "@svelteuidev/core";
   import FormattedNumber from "./components/FormattedNumber.svelte";
   import TippingModal from "./TippingModal.svelte";
-  import { initialInputDelayed, totalProfit } from "./logic/store";
+  import { principalInputDelayed, totalProfit } from "./logic/store";
   import SettingPanel from "./SettingPanel.svelte";
   import { InfoCircled } from "radix-icons-svelte";
   import FloatingFooter from "./Footer.svelte";
   import HeaderRow from "./HeaderRow.svelte";
   import { enableAnimations, noConfigModal, showDisclaimer } from "./logic/settings.js";
-  import { totalReferrerCut } from "./logic/store.js";
+  import { percentADay, retriggerCalc, totalReferrerCut } from "./logic/store.js";
   import SettingsReadOnlyPanelButton from "./SettingsReadOnlyPanelButton.svelte";
   import { isSmallDevice } from "./logic/constants.js";
   import DetailColumn from "./DetailColumn.svelte";
@@ -63,7 +63,7 @@
                 <span>(<FormattedNumber
                     animate={$enableAnimations}
                     notation="standard"
-                    number={(100 / $initialInputDelayed) * $totalProfit}
+                    number={(100 / $principalInputDelayed) * $totalProfit}
                 /> %)</span>
               </div>
             </GridCol>
@@ -88,6 +88,13 @@
       </div>
     </GridCol>
     <GridCol md={4} xs={12}>
+      {#if $percentADay === -1}
+        <Button on:click={() => retriggerCalc()} fullSize variant='gradient' uppercase ripple>
+          Retrigger Random Interest
+        </Button>
+        <br/>
+      {/if}
+
       <DetailColumn/>
     </GridCol>
   </Grid>

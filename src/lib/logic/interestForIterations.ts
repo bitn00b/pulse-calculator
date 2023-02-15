@@ -1,5 +1,7 @@
-import type { InterestForIterationSettings } from "./store";
+import type { AdditionalDepositsSettings, InterestForIterationSettings } from "./store";
 import { nanoid } from "nanoid";
+import { averageOfNumbers } from "./utils";
+import type { InterestEntry, IterationResult } from "./types";
 
 const MAX_TO_COMPOUND_NOVIP = 100_000;
 const MAX_TO_COMPOUND_VIP = 500_000;
@@ -11,28 +13,31 @@ const PULSE_WITHDRAW_FEE = 0.95; // 5%
 // the value is calculated alone so no 0.995 thing
 const REFERRER_CUT = 0.05;
 
-export type InterestEntry = {
-  day: number;
-  startedWith: number;
-  currentValue: number;
-  canCompound: boolean;
-  profitOfThisDay: number;
-  referrerCut: number;
-  profitUntilNow: number;
+
+function setAdditionalDepositsDefaults (additionalDeposits: AdditionalDepositsSettings) {
+  if (!additionalDeposits.additionalAmount) {
+    additionalDeposits.additionalAmount = 0;
+  }
+
+  if (!additionalDeposits.additionalLimit) {
+    additionalDeposits.additionalLimit = 0;
+  }
 }
 
-export type IterationResult = {
-  iteration: number;
-  interests: InterestEntry[];
-  amountAfterFees: number;
-  days: number;
-  initial: number;
-  amountAfterAllDays: number;
-  withdrawFee: number;
-  sellTax: number;
-  referrerCutOfIteration: number;
-  profit: number;
-  uuid: string;
+function RNG (seed) {
+  var m_as_number = 2 ** 53 - 111
+  var m = 2n ** 53n - 111n
+  var a = 5667072534355537n
+  var s = BigInt(seed) % m
+  return function () {
+    return Number(s = s * a % m) / m_as_number
+  }
+}
+
+const myRandomGenerator = RNG(Date.now());
+
+function randomNumberBetweenZeroAnd (max) {
+  return Math.floor(myRandomGenerator() * (max + 1));
 }
 
 export function interestForIterations (
@@ -41,25 +46,21 @@ export function interestForIterations (
     pulseVip,
     initial,
     percentADay,
-    first70Days,
-    additionalAmountInterval,
-    additionalAmount,
-    additionalLimit
+    first80Days,
+    additionalDeposits,
+    withdrawSettings
   }: InterestForIterationSettings
 ): IterationResult[] {
   if (!initial) {
     return [];
   }
 
-  percentADay /= 100.0;
-
-  if (!additionalAmount) {
-    additionalAmount = 0;
+  const differentPercentPerDay = percentADay < 0;
+  if (percentADay > 0) {
+    percentADay /= 100.0;
   }
 
-  if (!additionalLimit) {
-    additionalLimit = 0;
-  }
+  setAdditionalDepositsDefaults(additionalDeposits);
 
   const maxDays = pulseVip ? 100 : 60;
   const MAX_TO_COMPOUND = pulseVip ? MAX_TO_COMPOUND_VIP : MAX_TO_COMPOUND_NOVIP;
@@ -72,7 +73,7 @@ export function interestForIterations (
   for (let iteration = 1; iteration <= iterationCount; iteration++) {
     const startOfIteration = initial;
 
-    const daysToCalculate = iteration === 1 && maxDays === 60 && first70Days ? 70 : maxDays;
+    const daysToCalculate = iteration === 1 && maxDays === 60 && first80Days ? 80 : maxDays;
 
     const interests: InterestEntry[] = [];
 
@@ -84,26 +85,26 @@ export function interestForIterations (
     for (var day = 1; day <= daysToCalculate; day++) {
       currentDay++;
 
-      // additional deposits logic
+      // region # additional deposits logic
       if (currentValue < MAX_TO_COMPOUND
-        && (additionalLimit === 0 || additionalIntervalCounter <= additionalLimit)) {
-        switch (additionalAmountInterval) {
+        && (additionalDeposits.additionalLimit === 0 || additionalIntervalCounter <= additionalDeposits.additionalLimit)) {
+        switch (additionalDeposits.additionalAmountInterval) {
           case 'daily': {
             additionalIntervalCounter++;
-            currentValue += additionalAmount;
+            currentValue += additionalDeposits.additionalAmount;
             break;
           }
           case 'weekly': {
             if (currentDay % 7 === 0) {
               additionalIntervalCounter++;
-              currentValue += additionalAmount;
+              currentValue += additionalDeposits.additionalAmount;
             }
             break;
           }
           case 'monthly': {
             if (currentDay % 30 === 0) {
               additionalIntervalCounter++;
-              currentValue += additionalAmount;
+              currentValue += additionalDeposits.additionalAmount;
             }
 
             break;
@@ -111,11 +112,20 @@ export function interestForIterations (
         }
       }
 
+      // endregion additional deposits logic
+
       const startedWith = currentValue;
       const canCompound = startedWith < MAX_TO_COMPOUND;
       let profitOfThisDay = 0;
 
       // console.info('started with', startedWith)
+
+      if (differentPercentPerDay) {
+        const randomPercentStep = randomNumberBetweenZeroAnd(4); // 0-4
+
+        percentADay = (100.5 + randomPercentStep / 2) / 100; // ... yea don't ask =D
+        // console.info({percentADay});
+      }
 
       if (canCompound) {
         profitOfThisDay = (currentValue * percentADay) - startedWith;
@@ -143,7 +153,7 @@ export function interestForIterations (
         }
       }
 
-      const interestEntry = {
+      const interestEntry: InterestEntry = {
         day,
         startedWith,
         currentValue,
@@ -151,6 +161,7 @@ export function interestForIterations (
         profitOfThisDay,
         referrerCut,
         profitUntilNow,
+        percentADay
       };
 
       // console.info(interestEntry)
@@ -178,6 +189,8 @@ export function interestForIterations (
 
     const profit = amountAfterFees - startOfIteration;
 
+    const averagePercent = averageOfNumbers(interests.map(i => i.percentADay)) * 100 - 100;
+
     result.push({
       uuid: nanoid(),
       iteration,
@@ -187,11 +200,13 @@ export function interestForIterations (
       withdrawFee,
       sellTax,
       days: daysToCalculate,
-      initial: startOfIteration,
+      principal: startOfIteration,
       referrerCutOfIteration,
+      averagePercent,
       profit,
     });
 
+    // setting the initial for the next iteration
     initial = amountAfterFees < MAX_TO_COMPOUND ? amountAfterFees : MAX_TO_COMPOUND;
 
     // yield [...result];

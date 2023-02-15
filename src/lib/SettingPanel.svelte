@@ -3,15 +3,21 @@
   import {
     additionalAmount,
     additionalInterval,
-    first70Days,
+    first80Days,
     initialAmountSelected,
     iterations,
     percentADay,
-    pulseVip
+    pulseVip,
+    withdrawPercentInVFX
   } from "./logic/store";
   import { iterationsList, percentList } from "./logic/constants.js";
   import { noConfigModal } from "./logic/settings.js";
   import { additionalIntervalLabel, additionalLimit } from "./logic/store.js";
+  // noinspection ES6UnusedImports
+  import RangeSlider from "svelte-range-slider-pips";
+  import { writable } from "svelte/store";
+
+  import { debounce } from 'svelte-reactive-debounce'
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
@@ -21,11 +27,26 @@
     // and/or NativeSelect runs into a race condition and then it stays on the value before...yay
     setTimeout(() => $percentADay = newValue);
   }
+
+  let slider = writable([0]);
+
+  debounce(slider, 500).subscribe(sliderVal => {
+    const slideValue = sliderVal[0];
+    const flooredValue = Math.floor(slideValue);
+    const divideBy100 = flooredValue / 100;
+
+    withdrawPercentInVFX.set(123 + flooredValue + 1)
+    console.info(JSON.stringify({slideValue, flooredValue, divideBy100}));
+
+
+  })
+
+
 </script>
 
 <Grid>
   <GridCol xs={12} sm={4}>
-    <NumberInput placeholder="Initial Amount" label="Initial Amount"
+    <NumberInput placeholder="Initial Amount" label="Principal Amount"
                  bind:value={$initialAmountSelected}/>
   </GridCol>
   <GridCol xs={12} sm={4}>
@@ -37,7 +58,7 @@
   </GridCol>
   <GridCol xs={12} sm={4}>
     <NativeSelect data={percentList}
-                  label="Percent per Day"
+                  label="Interest per Day"
                   on:change={(e) => changePercentPerDay(Number(e.target.value))}
                   value={$percentADay}
     />
@@ -51,7 +72,7 @@
 
   {#if !$pulseVip}
     <GridCol xs={12} md={8} style="align-self: end;padding-bottom: 0.75rem;">
-      <Switch bind:checked={$first70Days} label="First Iteration 70 Days?" class="inline-flex"/>
+      <Switch bind:checked={$first80Days} label="First Iteration 80 Days?" class="inline-flex"/>
     </GridCol>
   {/if}
 
@@ -69,34 +90,56 @@
                   bind:value={$additionalInterval}
     />
   </GridCol>
-    <GridCol xs={12} md={4} style="align-self: end">
-      <NumberInput placeholder={$additionalIntervalLabel}
-                   label="Stop after X {$additionalIntervalLabel}"
-                   description="0 = no limit"
-                   bind:value={$additionalLimit}/>
+  <GridCol xs={12} md={4} style="align-self: end">
+    <NumberInput placeholder={$additionalIntervalLabel}
+                 label="Stop after X {$additionalIntervalLabel}"
+                 description="0 = no limit"
+                 bind:value={$additionalLimit}/>
   </GridCol>
 </Grid>
 
-<h4 style="margin-bottom: 0">Withdraw Settings (soon)</h4>
+<h4 style="margin-bottom: 1rem">Withdraw Settings - Soon<sup>TM</sup> </h4>
+
 <!--
 <Grid>
-  <GridCol xs={12} md={4} style="align-self: end">
-    The Slider <br/>
-    X% stays in VFX <br/>
-    Y% keeps used in USDT  <br/>
+  <GridCol xs={12} md={12} style="align-self: end">
+    <div class="rangeslider-full-width">
+      <InputWrapper label={`Withdraw ${$slider[0]}% in VFX`}
+                    description="At the end of each iteration">
+        <RangeSlider pips min={0} max={100} step={1} pipstep={10} suffix="%"
+                     range="min"
+                     first='label' last='label' all='label'
+                     bind:values={$slider}/>
+      </InputWrapper>
+
+    </div>
+
+    {$slider[0]}% stays in VFX <br/>
+    {100 - $slider[0]}% keep used in USDT <br/>
 
   </GridCol>
 
 </Grid>
 -->
-
 <br/>
 <Switch bind:checked={$noConfigModal}
         label="Always show these Properties on Main Page"
         class="inline-flex"/>
-<br/>
+
 <!--
+<br/>
 <Switch bind:checked={$enableAnimations}
         label="Enable Animations"
         class="inline-flex"/>
 -->
+
+<style lang="scss">
+  .rangeslider-full-width {
+    width: 100%;
+    --range-handle-inactive: var(--svelteui-colors-blue600); /* inactive handle color */
+    --range-handle: var(--svelteui-colors-blue700); /* non-focussed handle color */
+    --range-handle-focus: var(--svelteui-colors-blue700); /* focussed handle color */
+    --range-range: var(--svelteui-colors-blue300);
+    --range-range-inactive: var(--svelteui-colors-blue300);
+  }
+</style>

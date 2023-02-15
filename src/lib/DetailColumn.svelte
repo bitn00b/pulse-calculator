@@ -6,6 +6,10 @@
   import SummaryCalculation from "./SummaryCalculation.svelte";
   import IterationTile from "./IterationTile.svelte";
   import Select from 'svelte-select';
+  import { iterationsList } from "./logic/constants";
+
+  // Select CSS Vars
+  // https://github.com/rob-balfre/svelte-select/blob/master/docs/theming_variables.md
 
   type LabelValue = {
     label: string;
@@ -28,6 +32,10 @@
   ] as LabelValue[];
 
   const selectedIterationStore = writable<LabelValue>(SummaryEnry);
+
+  $: if ($selectedIterationStore.value >= iterationsList.length) {
+    selectedIterationStore.set(SummaryEnry)
+  }
 
   const iterationTileData = derived([selectedIterationStore,
     debounce(interestPerIteration, 150)], ([selectedIteration, iterationList]) => {

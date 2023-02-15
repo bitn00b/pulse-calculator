@@ -1,6 +1,6 @@
 <script lang="ts">
   import FormattedNumber from './components/FormattedNumber.svelte';
-  import { initialInputDelayed, interestPerIteration, totalProfit } from './logic/store.js';
+  import { interestPerIteration, principalInputDelayed, totalProfit } from './logic/store.js';
   import { Badge, Grid, Modal, UnstyledButton } from "@svelteuidev/core";
   import { enableAnimations } from "./logic/settings.js";
   import { derived, readable } from "svelte/store";
@@ -16,7 +16,7 @@
   $: totalDays = $interestPerIteration.reduce((prev, cur) => {
     return prev + cur.interests.length;
   }, 0);
-  $: totalAmountAtTheEnd = $initialInputDelayed + $totalProfit;
+  $: totalAmountAtTheEnd = $principalInputDelayed + $totalProfit;
 
 
   const time = readable(dayjs(new Date()), function start (set) {
@@ -32,7 +32,7 @@
   /** Countdown Functions */
 
   function getDate (day) {
-    return new Date(2023, 1 /*yeah ... month is starting from 0...*/, day, 23, 59, 59);
+    return new Date(2023, 2 /*yeah ... month is starting from 0...*/, day, 23, 59, 59);
   }
 
   const fullDayOfMinutes = 60 * 24;
@@ -53,9 +53,9 @@
     })
   }
 
-  const pulsePrivatePresaleStart = getDate(14);
-  const pulsePublicPresaleStart = getDate(16);
-  const pulsePublicStart = getDate(18);
+  const pulsePrivatePresaleStart = getDate(-1);
+  const pulsePublicPresaleStart = getDate(4);
+  const pulsePublicStart = getDate(8);
 
   // const headerLabel = der
 

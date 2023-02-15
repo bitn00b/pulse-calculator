@@ -1,18 +1,28 @@
 import { derived, writable } from "svelte/store";
 import { debounce } from 'svelte-reactive-debounce'
-import type { IterationResult } from "./interestForIterations";
 import type { Readable } from "svelte/types/runtime/store";
-import { isSmallDevice } from "./constants";
+import { get_store_value } from "svelte/internal";
+import { averageOfNumbers } from "./utils";
+import type { IterationResult } from "./types";
+
+export type AdditionalDepositsSettings = {
+  additionalAmount: number;
+  additionalAmountInterval: string;
+  additionalLimit: number;
+}
+
+export type WithdrawSettings = {
+  withdrawPercentInVFX: number; // rest will be withdrawn as USDT
+}
 
 export type InterestForIterationSettings = {
   iterationCount: number;
   pulseVip: boolean;
   initial: number;
   percentADay: number;
-  first70Days: boolean;
-  additionalAmount: number;
-  additionalAmountInterval: string;
-  additionalLimit: number;
+  first80Days: boolean;
+  additionalDeposits: AdditionalDepositsSettings;
+  withdrawSettings: WithdrawSettings;
 }
 
 // Inputs
@@ -20,7 +30,12 @@ export const initialAmountSelected = writable(100);
 export const iterations = writable(4);
 export const percentADay = writable(100.5);
 export const pulseVip = writable(false);
-export const first70Days = writable(false);
+export const first80Days = writable(false);
+
+export const withdrawPercentInVFX = writable(123123);
+export const testWAasd = writable(123123);
+
+
 export const additionalAmount = writable(0);
 export const additionalInterval = writable('daily');
 export const additionalLimit = writable(0);
@@ -30,26 +45,34 @@ export const showTippingModal = writable(false);
 
 // Derived Data of Settings (reactive)
 
-export const initialInputDelayed = debounce(initialAmountSelected, 250);
+export const principalInputDelayed = debounce(initialAmountSelected, 250);
+
+const additionalDeposits = derived([
+  debounce(additionalAmount, 250),
+  additionalInterval,
+  debounce(additionalLimit, 250)
+], values => {
+  return {
+    additionalAmount: values[0],
+    additionalAmountInterval: values[1],
+    additionalLimit: values[2]
+  } as AdditionalDepositsSettings;
+});
 
 export const combinedData = derived([
   iterations,
   pulseVip,
-  initialInputDelayed,
+  principalInputDelayed,
   percentADay,
-  first70Days,
-  debounce(additionalAmount, 250),
-  additionalInterval,
-  debounce(additionalLimit, 250)
-], ([iterationCount, pulseVip, initial, percentADay, first70Days, additionalAmount, additionalAmountInterval, additionalLimit]) => ({
+  first80Days,
+  additionalDeposits,
+], ([iterationCount, pulseVip, initial, percentADay, first80Days, additionalDeposits]) => ({
   iterationCount,
   pulseVip,
   initial,
   percentADay,
-  first70Days,
-  additionalAmount,
-  additionalAmountInterval,
-  additionalLimit
+  first80Days,
+  additionalDeposits
 }) as InterestForIterationSettings);
 
 function delayMsAsync (ms: number) {
@@ -83,11 +106,14 @@ const worker = new Worker(
   {type: 'module'}
 );
 
+const retriggerForRandom = writable(0);
+
+export function retriggerCalc() {
+  retriggerForRandom.set(get_store_value(retriggerForRandom)+1);
+}
+
 export const interestPerIteration: Readable<IterationResult[]> = derived(
-  [combinedData, isSmallDevice], ([values, smallDevice], set) => {
-    const delay = smallDevice ? 500 : 125;
-
-
+  [combinedData, retriggerForRandom], ([values], set) => {
     function workerResultCallback (ev) {
       console.info('received data', ev.data);
       set(ev.data);
@@ -108,9 +134,19 @@ export const totalProfit = derived(interestPerIteration, values => values.reduce
   return prev + cur.profit;
 }, 0));
 
+export const totalDays = derived(interestPerIteration, values => values.reduce((prev, cur) => {
+  return prev + cur.days;
+}, 0));
+
 export const totalReferrerCut = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
-    return prev + cur.referrerCutOfIteration;
-  }, 0));
+  return prev + cur.referrerCutOfIteration;
+}, 0));
+
+export const totalCuts = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
+  return prev + cur.referrerCutOfIteration + cur.sellTax + cur.withdrawFee;
+}, 0));
+
+export const totalAveragePercent = derived(interestPerIteration, iterations => averageOfNumbers(iterations.map(i => i.averagePercent)));
 
 export const days = derived(pulseVip, vip => vip ? 100 : 60);
 export const additionalIntervalLabel = derived(additionalInterval, interval => {
