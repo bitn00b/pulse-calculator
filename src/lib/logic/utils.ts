@@ -21,3 +21,8 @@ export function formatNumber (value: number): string {
 
   return nfp(value);
 }
+
+
+export function averageOfNumbers(numbers: number[]) {
+  return numbers.reduce((previousValue, currentValue) => previousValue + currentValue, 0) / numbers.length;
+}
