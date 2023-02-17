@@ -4,6 +4,7 @@ import type { Readable } from "svelte/types/runtime/store";
 import { get_store_value } from "svelte/internal";
 import { averageOfNumbers } from "./utils";
 import type { IterationResult } from "./types";
+import { increaseCalculationCounter, increaseRandomInterestCounter } from "./tracking-state";
 
 export type AdditionalDepositsSettings = {
   additionalAmount: number;
@@ -108,15 +109,25 @@ const worker = new Worker(
 
 const retriggerForRandom = writable(0);
 
-export function retriggerCalc() {
-  retriggerForRandom.set(get_store_value(retriggerForRandom)+1);
+export function retriggerCalc () {
+  retriggerForRandom.set(get_store_value(retriggerForRandom) + 1);
+  increaseRandomInterestCounter();
 }
 
+let firstCalculation = false;
+
+// refactor this someday, extract the webworker connection, so that its not always add and removes the listener
 export const interestPerIteration: Readable<IterationResult[]> = derived(
   [combinedData, retriggerForRandom], ([values], set) => {
     function workerResultCallback (ev) {
       console.info('received data', ev.data);
       set(ev.data);
+    }
+
+    if (!firstCalculation) {
+      firstCalculation = true;
+    } else {
+      increaseCalculationCounter();
     }
 
     set([]);

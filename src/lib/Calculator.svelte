@@ -12,6 +12,7 @@
   import SettingsReadOnlyPanelButton from "./SettingsReadOnlyPanelButton.svelte";
   import { isSmallDevice } from "./logic/constants.js";
   import DetailColumn from "./DetailColumn.svelte";
+  import TrackUsageTime from "./TrackUsageTime.svelte";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
@@ -96,6 +97,8 @@
       {/if}
 
       <DetailColumn/>
+
+      <TrackUsageTime/>
     </GridCol>
   </Grid>
 </Stack>

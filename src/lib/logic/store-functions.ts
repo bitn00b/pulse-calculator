@@ -12,6 +12,20 @@ export function localStoredSetting<TWritableType> (key: string, defaultValue: st
   return writableToReturn;
 }
 
+export function localStoredMappedSetting<TWritableType> (
+  key: string,
+  storedToValue: (savedValue: string) => TWritableType,
+  valueToStored: (currentValue: TWritableType) => string
+) {
+  const localStoredValue = localStorage.getItem(key);
+
+  const writableToReturn = writable(storedToValue(localStoredValue));
+
+  writableToReturn.subscribe(newVal => localStorage.setItem(key, valueToStored(newVal)));
+
+  return writableToReturn;
+}
+
 export function asRxObservable<T> (svelteStore: Readable<T>): Observable<T> {
   return new Observable(subscriber => {
     const unsub = svelteStore.subscribe(value => {

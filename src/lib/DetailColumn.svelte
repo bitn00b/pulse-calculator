@@ -7,6 +7,7 @@
   import IterationTile from "./IterationTile.svelte";
   import Select from 'svelte-select';
   import { iterationsList } from "./logic/constants";
+  import { saveCurrentUsageTime } from "./logic/tracking-state.js";
 
   // Select CSS Vars
   // https://github.com/rob-balfre/svelte-select/blob/master/docs/theming_variables.md
@@ -47,6 +48,7 @@
 </script>
 
 <Select items={iterationSelectList} bind:value={$selectedIterationStore}
+        on:change={() => saveCurrentUsageTime()}
         clearable={false}
         searchable={false}
         showChevron

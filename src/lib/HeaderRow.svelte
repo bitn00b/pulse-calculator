@@ -53,7 +53,7 @@
     })
   }
 
-  const pulsePrivatePresaleStart = getDate(-1);
+  const pulsePrivatePresaleStart = getDate(0);
   const pulsePublicPresaleStart = getDate(4);
   const pulsePublicStart = getDate(8);
 
