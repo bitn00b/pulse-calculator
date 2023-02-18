@@ -155,6 +155,7 @@ export function interestForIterations (
 
       const interestEntry: InterestEntry = {
         day,
+        daySinceBegin: currentDay,
         startedWith,
         currentValue,
         canCompound,

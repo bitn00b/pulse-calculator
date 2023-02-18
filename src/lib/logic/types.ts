@@ -7,6 +7,7 @@ export interface PrincipalAndProfits {
 
 export type InterestEntry = {
   day: number;
+  daySinceBegin: number;
   startedWith: number;
   currentValue: number;
   canCompound: boolean;

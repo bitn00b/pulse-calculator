@@ -13,7 +13,7 @@ export const totalSecondsOnPage = localStoredMappedSetting<number>('totalSeconds
 export const totalCalculations = localStoredMappedSetting<number>('totalCalculations', savedValue => savedValue ? parseInt(savedValue, 10) : 0,
   currentValue => currentValue + '');
 
-export const randomInterestTriggered = localStoredMappedSetting<number>('totalCalculations', savedValue => savedValue ? parseInt(savedValue, 10) : 0,
+export const randomInterestTriggered = localStoredMappedSetting<number>('totalRandomInterestTriggered', savedValue => savedValue ? parseInt(savedValue, 10) : 0,
   currentValue => currentValue + '');
 
 export function saveCurrentUsageTime (maxSeconds?: number) {

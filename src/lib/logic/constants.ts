@@ -50,3 +50,5 @@ export const isSmallDevice = derived(widthChanged, width => {
 
 
 export const modalSize = derived(isSmallDevice, (smallDevice) => smallDevice ? '100%' : 'lg');
+
+export const minDatePickerDate = new Date(2023, 1, 28);

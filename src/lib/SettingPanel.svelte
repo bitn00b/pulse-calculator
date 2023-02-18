@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Grid, NativeSelect, NumberInput, Switch } from "@svelteuidev/core";
+  import { Grid, InputWrapper, NativeSelect, NumberInput, Switch } from "@svelteuidev/core";
   import {
     additionalAmount,
     additionalInterval,
@@ -10,14 +10,15 @@
     pulseVip,
     withdrawPercentInVFX
   } from "./logic/store";
-  import { iterationsList, percentList } from "./logic/constants.js";
+  import { iterationsList, minDatePickerDate, percentList } from "./logic/constants.js";
   import { noConfigModal } from "./logic/settings.js";
-  import { additionalIntervalLabel, additionalLimit } from "./logic/store.js";
+  import { additionalIntervalLabel, additionalLimit, dateFormat, dateFormatList, startDay } from "./logic/store.js";
   // noinspection ES6UnusedImports
   import RangeSlider from "svelte-range-slider-pips";
   import { writable } from "svelte/store";
 
   import { debounce } from 'svelte-reactive-debounce'
+  import { DateInput } from "date-picker-svelte";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
@@ -41,7 +42,9 @@
 
   })
 
+  const today = new Date();
 
+  const maxDateToSelect = new Date(today.getFullYear() + 1, 11, 31);
 </script>
 
 <Grid>
@@ -98,7 +101,7 @@
   </GridCol>
 </Grid>
 
-<h4 style="margin-bottom: 1rem">Withdraw Settings - Soon<sup>TM</sup> </h4>
+<h4 style="margin-bottom: 1rem">Withdraw Settings - Soon<sup>TM</sup></h4>
 
 <!--
 <Grid>
@@ -121,10 +124,36 @@
 
 </Grid>
 -->
+
+<br/>
+
+<h4 style="margin-bottom: 1rem">Misc </h4>
+
+<Grid>
+  <GridCol xs={12} md={12} style="align-self: end">
+    <span style="display: inline-block">
+    <InputWrapper label="Start-Date">
+      <DateInput format="yyyy-MM-dd" min={minDatePickerDate}
+                 max={maxDateToSelect}
+                 bind:value={$startDay}/>
+    </InputWrapper>
+</span>
+    &nbsp;
+    <span style="display: inline-block">
+    <NativeSelect data={dateFormatList}
+                  label="Date Format"
+                  bind:value={$dateFormat}
+    />
+      </span>
+  </GridCol>
+</Grid>
+
+
 <br/>
 <Switch bind:checked={$noConfigModal}
         label="Always show these Properties on Main Page"
         class="inline-flex"/>
+
 
 <!--
 <br/>
@@ -141,5 +170,11 @@
     --range-handle-focus: var(--svelteui-colors-blue700); /* focussed handle color */
     --range-range: var(--svelteui-colors-blue300);
     --range-range-inactive: var(--svelteui-colors-blue300);
+  }
+
+  :root {
+    --date-picker-background: var(--svelteui-colors-dark800);
+    --date-picker-foreground: #f7f7f7;
+    --date-picker-highlight-border: var(--svelteui-colors-dark500);
   }
 </style>

@@ -5,6 +5,8 @@ import { get_store_value } from "svelte/internal";
 import { averageOfNumbers } from "./utils";
 import type { IterationResult } from "./types";
 import { increaseCalculationCounter, increaseRandomInterestCounter } from "./tracking-state";
+import { minDatePickerDate } from "./constants";
+import { localStoredSetting } from "./store-functions";
 
 export type AdditionalDepositsSettings = {
   additionalAmount: number;
@@ -34,7 +36,10 @@ export const pulseVip = writable(false);
 export const first80Days = writable(false);
 
 export const withdrawPercentInVFX = writable(123123);
-export const testWAasd = writable(123123);
+export const startDay = writable(minDatePickerDate);
+
+export const dateFormatList = ['MM/DD/YY', 'DD/MM/YY'];
+export const dateFormat = localStoredSetting('dateFormat', dateFormatList[0], savedValue => savedValue);
 
 
 export const additionalAmount = writable(0);
