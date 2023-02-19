@@ -22,7 +22,7 @@
 
 <FixedHeaderTable data={iteration.interests}>
   <svelte:fragment slot="headerRow">
-    <th style="text-align: left">Day</th>
+    <th style="text-align: center">Day</th>
     <th style="text-align: center">Start</th>
     <th style="text-align: center">End</th>
     <th>Profit</th>

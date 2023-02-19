@@ -1,14 +1,13 @@
 import type { AdditionalDepositsSettings, InterestForIterationSettings } from "./store";
 import { nanoid } from "nanoid";
 import { averageOfNumbers } from "./utils";
-import type { InterestEntry, IterationResult } from "./types";
+import type { InterestEntry, IterationResult, IterationWithdrawAsVFX } from "./types";
 
 const MAX_TO_COMPOUND_NOVIP = 100_000;
 const MAX_TO_COMPOUND_VIP = 500_000;
 
-// 0.XX because its a multiplicator
-const VFX_SELL_TAX = 0.91; // 9%
-const PULSE_WITHDRAW_FEE = 0.95; // 5%
+const VFX_SELL_TAX = 0.09;
+const PULSE_WITHDRAW_FEE = 0.05;
 
 // the value is calculated alone so no 0.995 thing
 const REFERRER_CUT = 0.05;
@@ -171,15 +170,32 @@ export function interestForIterations (
       interests.push(interestEntry);
     }
 
-    const amountAfterAllDays = startOfIteration + profitUntilNow;
+    const amountAfterAllDays =startOfIteration + profitUntilNow;
+    let amountBeforeFeeTax = amountAfterAllDays;
 
-    const amountAfterWithdrawFee = amountAfterAllDays * PULSE_WITHDRAW_FEE;
+    let withdrawInVFX: IterationWithdrawAsVFX|null = null;
 
-    const withdrawFee = amountAfterAllDays - amountAfterWithdrawFee;
+    if (withdrawSettings?.withdrawPercentInVFX) {
+      const amountToWithdrawAsVFX = amountBeforeFeeTax * withdrawSettings.withdrawPercentInVFX / 100;
+      const withdrawFee =amountToWithdrawAsVFX * PULSE_WITHDRAW_FEE;
+      const amountAfterFee = amountToWithdrawAsVFX - withdrawFee;
 
-    const amountAfterFees = amountAfterWithdrawFee * VFX_SELL_TAX;
+      amountBeforeFeeTax -= amountToWithdrawAsVFX;
 
-    const sellTax = amountAfterWithdrawFee - amountAfterFees; // might need to refactor this ... and create tests xD
+      withdrawInVFX = {
+        amountBefore: amountAfterAllDays,
+        withdrawFee,
+        amountAfterFee,
+        remainingAmount: amountBeforeFeeTax
+      };
+    }
+
+    const withdrawFee = amountBeforeFeeTax * PULSE_WITHDRAW_FEE;
+
+    const amountAfterWithdrawFee = amountBeforeFeeTax - withdrawFee;
+
+    const sellTax = amountAfterWithdrawFee * VFX_SELL_TAX; // TODO create tests xD
+    const amountAfterFees = amountAfterWithdrawFee - sellTax;
 
 
     const referrerCutOfIteration = interests.reduce((prev, cur) => {
@@ -188,12 +204,14 @@ export function interestForIterations (
     // console.warn({iteration, lastDay, amountAfterFees});
     // console.table(interests);
 
-    const profit = amountAfterFees - startOfIteration;
+    const profit = (amountAfterFees + (withdrawInVFX?.amountAfterFee ?? 0)) - startOfIteration;
 
     const averagePercent = averageOfNumbers(interests.map(i => i.percentADay)) * 100 - 100;
 
     result.push({
       uuid: nanoid(),
+      amountBeforeFeeTax,
+      withdrawInVFX,
       iteration,
       interests,
       amountAfterFees,

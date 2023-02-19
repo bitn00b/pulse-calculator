@@ -17,14 +17,28 @@ export type InterestEntry = {
   percentADay: number;
 }
 
+export interface IterationWithdrawAsVFX {
+    amountBefore: number;
+    withdrawFee: number;
+    amountAfterFee: number;
+    remainingAmount: number;
+
+}
+
 export interface IterationResult extends PrincipalAndProfits {
   iteration: number;
   interests: InterestEntry[];
   amountAfterFees: number;
   amountAfterAllDays: number;
-  withdrawFee: number;
-  sellTax: number;
+
+  withdrawInVFX?: IterationWithdrawAsVFX;
+
   referrerCutOfIteration: number;
   uuid: string;
   averagePercent: number;
+
+  amountBeforeFeeTax: number;
+  withdrawFee: number;
+  sellTax: number;
+
 }

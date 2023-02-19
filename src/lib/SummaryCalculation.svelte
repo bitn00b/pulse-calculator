@@ -9,7 +9,10 @@
     totalCuts,
     totalDays,
     totalProfit,
-    totalReferrerCut
+    totalReferrerCut,
+    totalUSDT,
+    totalVFXReceived,
+    withdrawPercentInVFX
   } from "./logic/store.js";
   import PrincipalAndProfit from "./reuseable-parts/PrincipalAndProfit.svelte";
   import type { PrincipalAndProfits } from "./logic/types";
@@ -51,12 +54,27 @@
         <FormattedNumber animate={$enableAnimations} number={$totalCuts} notation="standard"/>
       </b></td>
     </tr>
+    {#if $withdrawPercentInVFX > 0}
+      <tr>
+        <td>Total VFX Received worth</td>
+        <td><b>$
+          <FormattedNumber animate={$enableAnimations} number={$totalVFXReceived} notation="standard"/>
+        </b></td>
+      </tr>
+    {/if}
+    <tr>
+      <td>Total USDT</td>
+      <td><b>$
+        <FormattedNumber animate={$enableAnimations} number={$totalUSDT} notation="standard"/>
+      </b></td>
+    </tr>
   </table>
 
   <br/>
 
   <br/>
-  More stats will be added Soon<sup>TM</sup>  :)
+  More stats will be added Soon<sup>TM</sup> :) <br/>
+  BSC Gas costs per Interaction will be added once known <br/>
 </Paper>
 <style>
     table td:last-child {

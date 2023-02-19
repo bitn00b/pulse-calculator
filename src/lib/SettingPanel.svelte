@@ -34,13 +34,9 @@
   debounce(slider, 500).subscribe(sliderVal => {
     const slideValue = sliderVal[0];
     const flooredValue = Math.floor(slideValue);
-    const divideBy100 = flooredValue / 100;
 
-    withdrawPercentInVFX.set(123 + flooredValue + 1)
-    console.info(JSON.stringify({slideValue, flooredValue, divideBy100}));
-
-
-  })
+    withdrawPercentInVFX.set(flooredValue)
+  });
 
   const today = new Date();
 
@@ -101,29 +97,32 @@
   </GridCol>
 </Grid>
 
-<h4 style="margin-bottom: 1rem">Withdraw Settings - Soon<sup>TM</sup></h4>
+<h4 style="margin-bottom: 1rem">Withdraw Settings</h4>
 
-<!--
+
 <Grid>
   <GridCol xs={12} md={12} style="align-self: end">
     <div class="rangeslider-full-width">
       <InputWrapper label={`Withdraw ${$slider[0]}% in VFX`}
                     description="At the end of each iteration">
         <RangeSlider pips min={0} max={100} step={1} pipstep={10} suffix="%"
-                     range="min"
-                     first='label' last='label' all='label'
+                     range="min" float={true}
+                     first={false} last={false} all='label'
                      bind:values={$slider}/>
       </InputWrapper>
 
     </div>
 
-    {$slider[0]}% stays in VFX <br/>
-    {100 - $slider[0]}% keep used in USDT <br/>
+    <div style="display: flex">
+      <span style="flex: 1; text-align: center">{$slider[0]}% stays in VFX</span>
+      <span style="flex: 1;text-align: center">{100 - $slider[0]}% keep used in Pulse (USDT)</span>
+    </div>
+
 
   </GridCol>
 
 </Grid>
--->
+
 
 <br/>
 
@@ -170,6 +169,20 @@
     --range-handle-focus: var(--svelteui-colors-blue700); /* focussed handle color */
     --range-range: var(--svelteui-colors-blue300);
     --range-range-inactive: var(--svelteui-colors-blue300);
+
+    --text-color: #c1c2c5;
+
+    --range-pip-text: var(--text-color);
+    --range-pip-hover-text: var(--svelteui-colors-blue400);
+    --range-pip-active-text: var(--svelteui-colors-blue400);
+    --range-pip-in-range-text: var(--svelteui-colors-blue400);
+
+    :global(.rangeSlider) {
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+      background: var(--svelteui-colors-dark500);
+    }
+
   }
 
   :root {

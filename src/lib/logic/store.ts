@@ -2,7 +2,7 @@ import { derived, writable } from "svelte/store";
 import { debounce } from 'svelte-reactive-debounce'
 import type { Readable } from "svelte/types/runtime/store";
 import { get_store_value } from "svelte/internal";
-import { averageOfNumbers } from "./utils";
+import { averageOfNumbers, sumPropertyOfArray } from "./utils";
 import type { IterationResult } from "./types";
 import { increaseCalculationCounter, increaseRandomInterestCounter } from "./tracking-state";
 import { minDatePickerDate } from "./constants";
@@ -65,6 +65,14 @@ const additionalDeposits = derived([
   } as AdditionalDepositsSettings;
 });
 
+const withdrawSettings = derived([
+  withdrawPercentInVFX
+], values => {
+  return {
+    withdrawPercentInVFX: values[0]
+  } as WithdrawSettings;
+});
+
 export const combinedData = derived([
   iterations,
   pulseVip,
@@ -72,13 +80,15 @@ export const combinedData = derived([
   percentADay,
   first80Days,
   additionalDeposits,
-], ([iterationCount, pulseVip, initial, percentADay, first80Days, additionalDeposits]) => ({
+  withdrawSettings,
+], ([iterationCount, pulseVip, initial, percentADay, first80Days, additionalDeposits, withdrawSettings]) => ({
   iterationCount,
   pulseVip,
   initial,
   percentADay,
   first80Days,
-  additionalDeposits
+  additionalDeposits,
+  withdrawSettings
 }) as InterestForIterationSettings);
 
 function delayMsAsync (ms: number) {
@@ -124,6 +134,7 @@ let firstCalculation = false;
 // refactor this someday, extract the webworker connection, so that its not always add and removes the listener
 export const interestPerIteration: Readable<IterationResult[]> = derived(
   [combinedData, retriggerForRandom], ([values], set) => {
+    console.info('newData to generate', values);
     function workerResultCallback (ev) {
       console.info('received data', ev.data);
       set(ev.data);
@@ -146,9 +157,11 @@ export const interestPerIteration: Readable<IterationResult[]> = derived(
     }
   });
 
-export const totalProfit = derived(interestPerIteration, values => values.reduce((prev, cur) => {
-  return prev + cur.profit;
-}, 0));
+export const totalProfit = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.profit));
+
+export const totalUSDT = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.amountAfterFees));
+
+export const totalVFXReceived = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.withdrawInVFX?.amountAfterFee ?? 0));
 
 export const totalDays = derived(interestPerIteration, values => values.reduce((prev, cur) => {
   return prev + cur.days;
@@ -159,7 +172,7 @@ export const totalReferrerCut = derived(interestPerIteration, iterations => iter
 }, 0));
 
 export const totalCuts = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
-  return prev + cur.referrerCutOfIteration + cur.sellTax + cur.withdrawFee;
+  return prev + cur.referrerCutOfIteration + cur.sellTax + cur.withdrawFee + (cur.withdrawInVFX?.withdrawFee ?? 0);
 }, 0));
 
 export const totalAveragePercent = derived(interestPerIteration, iterations => averageOfNumbers(iterations.map(i => i.averagePercent)));
