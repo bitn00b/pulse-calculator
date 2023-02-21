@@ -100,6 +100,14 @@ export function interestForIterations (
             }
             break;
           }
+          case 'bi-weekly': {
+            if (currentDay % 14 === 0) {
+              additionalIntervalCounter++;
+              currentValue += additionalDeposits.additionalAmount;
+            }
+
+            break;
+          }
           case 'monthly': {
             if (currentDay % 30 === 0) {
               additionalIntervalCounter++;
@@ -170,14 +178,14 @@ export function interestForIterations (
       interests.push(interestEntry);
     }
 
-    const amountAfterAllDays =startOfIteration + profitUntilNow;
+    const amountAfterAllDays = startOfIteration + profitUntilNow;
     let amountBeforeFeeTax = amountAfterAllDays;
 
-    let withdrawInVFX: IterationWithdrawAsVFX|null = null;
+    let withdrawInVFX: IterationWithdrawAsVFX | null = null;
 
     if (withdrawSettings?.withdrawPercentInVFX) {
       const amountToWithdrawAsVFX = amountBeforeFeeTax * withdrawSettings.withdrawPercentInVFX / 100;
-      const withdrawFee =amountToWithdrawAsVFX * PULSE_WITHDRAW_FEE;
+      const withdrawFee = amountToWithdrawAsVFX * PULSE_WITHDRAW_FEE;
       const amountAfterFee = amountToWithdrawAsVFX - withdrawFee;
 
       amountBeforeFeeTax -= amountToWithdrawAsVFX;

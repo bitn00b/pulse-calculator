@@ -2,6 +2,8 @@ import { derived } from "svelte/store";
 import { useViewportSize } from "@svelteuidev/composables";
 import { theme } from "@svelteuidev/core";
 
+export const additionalDepositTypes = ['daily', 'weekly','bi-weekly',  'monthly'];
+
 export const iterationsList = [1, 2, 3, 4, 6, 12, 18].map(i => ({
   label: i.toString(),
   value: i.toString()

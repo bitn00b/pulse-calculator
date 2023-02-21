@@ -171,6 +171,12 @@ export const totalReferrerCut = derived(interestPerIteration, iterations => iter
   return prev + cur.referrerCutOfIteration;
 }, 0));
 
+export const totalWithdrawFee = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.withdrawFee + (el.withdrawInVFX?.amountAfterFee ?? 0)));
+
+export const totalSellTaxed = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.sellTax));
+
+
+
 export const totalCuts = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
   return prev + cur.referrerCutOfIteration + cur.sellTax + cur.withdrawFee + (cur.withdrawInVFX?.withdrawFee ?? 0);
 }, 0));
@@ -184,6 +190,8 @@ export const additionalIntervalLabel = derived(additionalInterval, interval => {
       return 'days';
     case 'weekly':
       return 'weeks';
+      case 'bi-weekly':
+      return 'times every two weeks';
     case 'monthly':
       return 'months';
   }

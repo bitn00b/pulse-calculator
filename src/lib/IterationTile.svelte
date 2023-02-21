@@ -100,8 +100,11 @@
             </tr>
             <tr>
               <td>Received in VFX</td>
-              <td> =
-                <Profit profit={iteration.withdrawInVFX.amountAfterFee}/>
+              <td>= <b style="color: var(--svelteui-colors-blue500)">
+                $ <FormattedNumber animate={$enableAnimations}
+                                 number={iteration.withdrawInVFX.amountAfterFee} notation="standard"/>
+
+              </b>
               </td>
             </tr>
             <tr>

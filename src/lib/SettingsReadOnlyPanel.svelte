@@ -22,7 +22,7 @@
   </div>
 
   {#if $first80Days}
-    <div>First Iteration 70 Days |</div>
+    <div>First Iteration 80 Days |</div>
   {/if}
 
   {#if $additionalAmount}

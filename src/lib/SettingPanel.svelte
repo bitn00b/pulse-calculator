@@ -10,7 +10,7 @@
     pulseVip,
     withdrawPercentInVFX
   } from "./logic/store";
-  import { iterationsList, minDatePickerDate, percentList } from "./logic/constants.js";
+  import { additionalDepositTypes, iterationsList, minDatePickerDate, percentList } from "./logic/constants.js";
   import { noConfigModal } from "./logic/settings.js";
   import { additionalIntervalLabel, additionalLimit, dateFormat, dateFormatList, startDay } from "./logic/store.js";
   // noinspection ES6UnusedImports
@@ -84,7 +84,7 @@
 
   </GridCol>
   <GridCol xs={12} md={4} style="align-self: end">
-    <NativeSelect data={['daily', 'weekly', 'monthly']}
+    <NativeSelect data={additionalDepositTypes}
                   label="Interval"
                   bind:value={$additionalInterval}
     />
@@ -103,7 +103,7 @@
 <Grid>
   <GridCol xs={12} md={12} style="align-self: end">
     <div class="rangeslider-full-width">
-      <InputWrapper label={`Withdraw ${$slider[0]}% in VFX`}
+      <InputWrapper label={`Withdraw ${$slider[0]}% in VFX / ${100 - $slider[0]}% in USDT`}
                     description="At the end of each iteration">
         <RangeSlider pips min={0} max={100} step={1} pipstep={10} suffix="%"
                      range="min" float={true}
@@ -112,12 +112,6 @@
       </InputWrapper>
 
     </div>
-
-    <div style="display: flex">
-      <span style="flex: 1; text-align: center">{$slider[0]}% stays in VFX</span>
-      <span style="flex: 1;text-align: center">{100 - $slider[0]}% keep used in Pulse (USDT)</span>
-    </div>
-
 
   </GridCol>
 

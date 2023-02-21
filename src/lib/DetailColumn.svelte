@@ -6,7 +6,6 @@
   import SummaryCalculation from "./SummaryCalculation.svelte";
   import IterationTile from "./IterationTile.svelte";
   import Select from 'svelte-select';
-  import { iterationsList } from "./logic/constants";
   import { saveCurrentUsageTime } from "./logic/tracking-state.js";
 
   // Select CSS Vars
@@ -34,7 +33,7 @@
 
   const selectedIterationStore = writable<LabelValue>(SummaryEnry);
 
-  $: if ($selectedIterationStore.value >= iterationsList.length) {
+  $: if ($selectedIterationStore.value > $interestPerIteration.length) {
     selectedIterationStore.set(SummaryEnry)
   }
 
