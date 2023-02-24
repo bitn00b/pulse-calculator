@@ -157,9 +157,9 @@ export const interestPerIteration: Readable<IterationResult[]> = derived(
     }
   });
 
-export const totalProfit = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.profit));
+export const totalProfit = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.profit + (el.withdrawInVFX?.amountAfterFee ?? 0)));
 
-export const totalUSDT = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.amountAfterFees));
+export const totalUSDT = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.profit));
 
 export const totalVFXReceived = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.withdrawInVFX?.amountAfterFee ?? 0));
 
