@@ -85,7 +85,7 @@
             </GridCol>
 
             <GridCol lg={7} xs={6} style="padding: 8px">
-              <div class="grid-cell-2">
+              <div class="grid-cell-2" style="display: none">
                 {#if !$untilPublicStart.inThePast}
                   {#if $untilPublicStart.today}
                     🚀 T-O-D-A-Y 🚀

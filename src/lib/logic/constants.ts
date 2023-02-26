@@ -2,36 +2,26 @@ import { derived } from "svelte/store";
 import { useViewportSize } from "@svelteuidev/composables";
 import { theme } from "@svelteuidev/core";
 
-export const additionalDepositTypes = ['daily', 'weekly','bi-weekly',  'monthly'];
+export const additionalDepositTypes = ['daily', 'weekly', 'bi-weekly', 'monthly'];
 
 export const iterationsList = [1, 2, 3, 4, 6, 12, 18].map(i => ({
   label: i.toString(),
   value: i.toString()
 }));
 
-export const percentList = [
-  {
-    label: '0.5',
-    value: 100.5
-  },
-  {
-    label: '1.0',
-    value: 101
-  }, {
-    label: '1.5',
-    value: 101.5
-  }, {
-    label: '2.0',
-    value: 102
-  }, {
-    label: '2.5',
-    value: 102.5
-  }, {
-    label: 'Daily Random',
-    value: -1
-  }
-];
-
+export const percentList =
+  [
+    ...[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5].map(p => {
+      return {
+        label: p + '% daily',
+        value: 100 + p
+      }
+    }),
+    {
+      label: 'Daily Random',
+      value: -1
+    }
+  ];
 
 
 export const viewport = useViewportSize();
