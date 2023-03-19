@@ -164,7 +164,7 @@
   .top-label-tile {
     margin-top: 0;
     word-wrap: break-word;
-    height: 4rem;
+    min-height: 4rem;
     overflow-y: clip;
   }
 

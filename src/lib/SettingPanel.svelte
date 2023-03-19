@@ -18,7 +18,14 @@
     percentList
   } from "./logic/constants.js";
   import { noConfigModal } from "./logic/settings.js";
-  import { additionalIntervalLabel, additionalLimit, dateFormat, dateFormatList, startDay } from "./logic/store.js";
+  import {
+    additionalIntervalLabel,
+    additionalLimit,
+    dateFormat,
+    dateFormatList,
+    startDay,
+    stateTax
+  } from "./logic/store.js";
   // noinspection ES6UnusedImports
   import RangeSlider from "svelte-range-slider-pips";
   import { writable } from "svelte/store";
@@ -132,21 +139,29 @@
 <h4 style="margin-bottom: 1rem">Misc </h4>
 
 <Grid>
-  <GridCol xs={12} md={12} style="align-self: end">
-    <span style="display: inline-block">
-    <InputWrapper label="Start-Date">
+  <GridCol xs={12} md={4} style="display: flex; align-self: end; justify-content: stretch">
+
+    <InputWrapper label="Start-Date" class="input-wrapper">
       <DateInput format="yyyy-MM-dd" min={minDatePickerDate}
                  max={maxDateToSelect}
                  bind:value={$startDay}/>
     </InputWrapper>
-</span>
+
     &nbsp;
-    <span style="display: inline-block">
+  </GridCol>
+  <GridCol xs={12} md={4} style="align-self: end">
+
     <NativeSelect data={dateFormatList}
                   label="Date Format"
                   bind:value={$dateFormat}
     />
-      </span>
+  </GridCol>
+  <GridCol xs={12} md={4}>
+    <NumberInput placeholder="State Tax to calculate on profits"
+                 label="State Tax on Profits (%)"
+                 description="Will not removed from Profit"
+                 bind:value={$stateTax}/>
+
   </GridCol>
 </Grid>
 
@@ -186,6 +201,30 @@
       background: var(--svelteui-colors-dark500);
     }
 
+  }
+
+  :global(.input-wrapper) {
+    width: 100%;
+    --date-input-width: 100%;
+
+
+  }
+
+  :global(.date-time-picker) {
+    line-height: normal;
+
+    :global(.dropdown) {
+      margin-left: 8px !important;
+    }
+
+    :global(select) {
+      height: 1rem !important;
+
+      padding-right: 0 !important;
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+
+    }
   }
 
   :root {

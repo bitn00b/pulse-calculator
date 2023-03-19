@@ -3,7 +3,7 @@
   import FormattedNumber from "./components/FormattedNumber.svelte";
   import InterestDailyHistory from "./InterestDailyHistory.svelte";
   import { enableAnimations } from "./logic/settings.js";
-  import { percentADay, withdrawPercentInVFX } from "./logic/store.js";
+  import { percentADay, stateTax, withdrawPercentInVFX } from "./logic/store.js";
   import type { IterationResult } from "./logic/types";
   import PrincipalAndProfit from "./reuseable-parts/PrincipalAndProfit.svelte";
   import Profit from "./reuseable-parts/Profit.svelte";
@@ -101,7 +101,8 @@
             <tr>
               <td>Received in VFX</td>
               <td>= <b style="color: var(--svelteui-colors-blue500)">
-                $ <FormattedNumber animate={$enableAnimations}
+                $
+                <FormattedNumber animate={$enableAnimations}
                                  number={iteration.withdrawInVFX.amountAfterFee} notation="standard"/>
 
               </b>
@@ -194,6 +195,25 @@
               <Profit profit={iteration.profit}/>
             </td>
           </tr>
+          {#if $stateTax > 0}
+            <tr>
+              <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+              <td> State Tax Cut 😭:</td>
+              <td class="negative-numbers">- $
+                <FormattedNumber number={iteration.profit * $stateTax / 100}></FormattedNumber>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <Text size='sm' align='right'>({$stateTax}% of $
+                  <FormattedNumber number={iteration.profit}/>
+                  )
+                </Text>
+              </td>
+            </tr>
+          {/if}
         </table>
 
       </div>
@@ -210,9 +230,5 @@
 
   table tr td:last-child {
     text-align: end;
-  }
-
-  .negative-numbers {
-    color: var(--svelteui-colors-red700);
   }
 </style>

@@ -18,6 +18,10 @@ export type WithdrawSettings = {
   withdrawPercentInVFX: number; // rest will be withdrawn as USDT
 }
 
+export type MiscSettings = {
+  stateTax: number; // 0-100percent
+}
+
 export type InterestForIterationSettings = {
   iterationCount: number;
   pulseVip: boolean;
@@ -26,6 +30,7 @@ export type InterestForIterationSettings = {
   first80Days: boolean;
   additionalDeposits: AdditionalDepositsSettings;
   withdrawSettings: WithdrawSettings;
+  miscSettings: MiscSettings;
 }
 
 // Inputs
@@ -45,6 +50,9 @@ export const dateFormat = localStoredSetting('dateFormat', dateFormatList[0], sa
 export const additionalAmount = writable(0);
 export const additionalInterval = writable('daily');
 export const additionalLimit = writable(0);
+
+
+export const stateTax = writable(0);
 
 // Modals
 export const showTippingModal = writable(false);
@@ -72,6 +80,15 @@ const withdrawSettings = derived([
     withdrawPercentInVFX: values[0]
   } as WithdrawSettings;
 });
+
+const miscSettings = derived([
+  stateTax
+], values => {
+  return {
+    stateTax: values[0]
+  } as MiscSettings;
+});
+
 
 export const combinedData = derived([
   iterations,
@@ -135,6 +152,7 @@ let firstCalculation = false;
 export const interestPerIteration: Readable<IterationResult[]> = derived(
   [combinedData, retriggerForRandom], ([values], set) => {
     console.info('newData to generate', values);
+
     function workerResultCallback (ev) {
       console.info('received data', ev.data);
       set(ev.data);
@@ -176,7 +194,6 @@ export const totalWithdrawFee = derived(interestPerIteration, values => sumPrope
 export const totalSellTaxed = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.sellTax));
 
 
-
 export const totalCuts = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
   return prev + cur.referrerCutOfIteration + cur.sellTax + cur.withdrawFee + (cur.withdrawInVFX?.withdrawFee ?? 0);
 }, 0));
@@ -190,7 +207,7 @@ export const additionalIntervalLabel = derived(additionalInterval, interval => {
       return 'days';
     case 'weekly':
       return 'weeks';
-      case 'bi-weekly':
+    case 'bi-weekly':
       return 'times every two weeks';
     case 'monthly':
       return 'months';
