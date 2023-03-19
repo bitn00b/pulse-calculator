@@ -4,8 +4,6 @@
 
   export let animate = false;
   export let number: number;
-  export let locale = "en";
-  export let notation: Intl.NumberFormatOptions['notation'] = "compact";
 
   $: formattedNumber = formatNumberUSD( number);
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Grid, InputWrapper, NativeSelect, NumberInput, Switch } from "@svelteuidev/core";
+  import { InputWrapper, NativeSelect, NumberInput, Switch } from "@svelteuidev/core";
   import {
     additionalAmount,
     additionalInterval,
@@ -10,7 +10,13 @@
     pulseVip,
     withdrawPercentInVFX
   } from "./logic/store";
-  import { additionalDepositTypes, iterationsList, minDatePickerDate, percentList } from "./logic/constants.js";
+  import {
+    additionalDepositTypes,
+    isSmallDevice,
+    iterationsList,
+    minDatePickerDate,
+    percentList
+  } from "./logic/constants.js";
   import { noConfigModal } from "./logic/settings.js";
   import { additionalIntervalLabel, additionalLimit, dateFormat, dateFormatList, startDay } from "./logic/store.js";
   // noinspection ES6UnusedImports
@@ -19,6 +25,7 @@
 
   import { debounce } from 'svelte-reactive-debounce'
   import { DateInput } from "date-picker-svelte";
+  import { Grid } from "./components/Grid";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
@@ -41,6 +48,8 @@
   const today = new Date();
 
   const maxDateToSelect = new Date(today.getFullYear() + 1, 11, 31);
+
+  $: sliderSteps = $isSmallDevice ? 20 : 10;
 </script>
 
 <Grid>
@@ -48,14 +57,14 @@
     <NumberInput placeholder="Initial Amount" label="Principal Amount"
                  bind:value={$initialAmountSelected}/>
   </GridCol>
-  <GridCol xs={12} sm={4}>
+  <GridCol xs={6} sm={4}>
     <NativeSelect data={iterationsList}
                   label="Iterations"
                   on:change={(e) => $iterations = Number(e.target.value)}
                   value={$iterations.toString()}
     />
   </GridCol>
-  <GridCol xs={12} sm={4}>
+  <GridCol xs={6} sm={4}>
     <NativeSelect data={percentList}
                   label="Interest per Day"
                   on:change={(e) => changePercentPerDay(Number(e.target.value))}
@@ -83,13 +92,13 @@
     <NumberInput placeholder="Amount" label="Amount" bind:value={$additionalAmount}/>
 
   </GridCol>
-  <GridCol xs={12} md={4} style="align-self: end">
+  <GridCol xs={6} md={4} style="align-self: end">
     <NativeSelect data={additionalDepositTypes}
                   label="Interval"
                   bind:value={$additionalInterval}
     />
   </GridCol>
-  <GridCol xs={12} md={4} style="align-self: end">
+  <GridCol xs={6} md={4} style="align-self: end">
     <NumberInput placeholder={$additionalIntervalLabel}
                  label="Stop after X {$additionalIntervalLabel}"
                  description="0 = no limit"
@@ -105,7 +114,7 @@
     <div class="rangeslider-full-width">
       <InputWrapper label={`Withdraw ${$slider[0]}% in VFX / ${100 - $slider[0]}% in USDT`}
                     description="At the end of each iteration">
-        <RangeSlider pips min={0} max={100} step={1} pipstep={10} suffix="%"
+        <RangeSlider pips min={0} max={100} step={1} pipstep={sliderSteps} suffix="%"
                      range="min" float={true}
                      first={false} last={false} all='label'
                      bind:values={$slider}/>

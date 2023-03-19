@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Alert, Badge, Button, Divider, Grid, Paper, Stack, UnstyledButton } from "@svelteuidev/core";
+  import { ActionIcon, Alert, Badge, Button, Divider, Paper, Stack, UnstyledButton } from "@svelteuidev/core";
   import FormattedNumber from "./components/FormattedNumber.svelte";
   import TippingModal from "./TippingModal.svelte";
   import { principalInputDelayed, totalProfit } from "./logic/store";
@@ -13,9 +13,20 @@
   import { isSmallDevice } from "./logic/constants.js";
   import DetailColumn from "./DetailColumn.svelte";
   import TrackUsageTime from "./TrackUsageTime.svelte";
+  import { Grid } from "./components/Grid";
+  import Icon from 'svelte-icons-pack/Icon.svelte';
+  import BiGlobe from "svelte-icons-pack/bi/BiGlobe";
+  import BiLogoTelegram from "svelte-icons-pack/bi/BiLogoTelegram";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
+
+  const buttonStyle = {
+    'padding': '0 0.5rem',
+    '&:hover': {
+      'color': 'white'
+    }
+  };
 
 </script>
 
@@ -55,12 +66,50 @@
 
           {/if}
           <Grid>
-            <GridCol sm={4} xs={12}>
+            <GridCol span={12}>
+              {#if $isSmallDevice}
+                <ActionIcon variant='outline' title="Vault Homepage" size="lg"
+                            href="https://thevaultfinance.com/" color="blue"
+                            style="display: inline-flex" root="a" target="_blank">
+                  <Icon color="white" size={24} src={BiGlobe}/>
+                </ActionIcon>
+
+                <ActionIcon variant='outline' title="Vault Telegram" root="a" target="_blank"
+                            href="https://t.me/TheVaultFinance" color="blue"
+                            style="display: inline-flex" size="lg">
+                  <Icon color="var(--svelteui-colors-blue300)" size={24} src={BiLogoTelegram}/>
+                </ActionIcon>
+              {:else}
+                <Button target="_blank" href="https://thevaultfinance.com/"
+                        variant="outline"
+                        style="display: inline-block" override={buttonStyle}>
+                  <div class="inner-button-centered">
+                    <Icon color="white" size={24} src={BiGlobe}/>
+                    Vault Homepage
+                  </div>
+                </Button>
+
+                <Button target="_blank" override={buttonStyle}
+                        href="https://t.me/TheVaultFinance" variant="outline"
+                        style="display: inline-block">
+                  <div class="inner-button-centered">
+                    <Icon color="var(--svelteui-colors-blue300)" size={24} src={BiLogoTelegram}/>
+                    Vault Telegram
+                  </div>
+                </Button>
+
+              {/if}
+
+            </GridCol>
+            <GridCol sm={4} xs={6}>
               <div class="top-label-tile">
                 Total Profit: <br/>
                 <b>$
                   <FormattedNumber animate={$enableAnimations} number={$totalProfit} notation="standard"/>
                 </b>
+                {#if $isSmallDevice}
+                  <br/>
+                {/if}
                 <span>(<FormattedNumber
                     animate={$enableAnimations}
                     notation="standard"
@@ -68,7 +117,7 @@
                 /> %)</span>
               </div>
             </GridCol>
-            <GridCol sm={6} xs={12}>
+            <GridCol sm={6} xs={6}>
               <div class="top-label-tile">
                 Total referrer Profit: <br/>
                 <b>$
@@ -123,6 +172,14 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
+  }
+
+  .inner-button-centered {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    gap: 0.5rem;
   }
 
 </style>
