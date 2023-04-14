@@ -1,7 +1,7 @@
-import type { AdditionalDepositsSettings, InterestForIterationSettings } from "./store";
-import { nanoid } from "nanoid";
-import { averageOfNumbers } from "./utils";
-import type { InterestEntry, IterationResult, IterationWithdrawAsVFX } from "./types";
+import type {AdditionalDepositsSettings, InterestForIterationSettings} from "./store";
+import {nanoid} from "nanoid";
+import {averageOfNumbers} from "./utils";
+import type {InterestEntry, IterationResult, IterationWithdrawAsVFX} from "./types";
 
 const MAX_TO_COMPOUND_NOVIP = 100_000;
 const MAX_TO_COMPOUND_VIP = 500_000;
@@ -85,36 +85,39 @@ export function interestForIterations (
       currentDay++;
 
       // region # additional deposits logic
-      if (currentValue < MAX_TO_COMPOUND
-        && (additionalDeposits.additionalLimit === 0 || additionalIntervalCounter <= additionalDeposits.additionalLimit)) {
-        switch (additionalDeposits.additionalAmountInterval) {
-          case 'daily': {
-            additionalIntervalCounter++;
-            currentValue += additionalDeposits.additionalAmount;
-            break;
-          }
-          case 'weekly': {
-            if (currentDay % 7 === 0) {
-              additionalIntervalCounter++;
-              currentValue += additionalDeposits.additionalAmount;
-            }
-            break;
-          }
-          case 'bi-weekly': {
-            if (currentDay % 14 === 0) {
-              additionalIntervalCounter++;
-              currentValue += additionalDeposits.additionalAmount;
-            }
+      if (currentValue < MAX_TO_COMPOUND) {
+        currentValue += additionalDeposits.additionalVolumeBusdAmount;
 
-            break;
-          }
-          case 'monthly': {
-            if (currentDay % 30 === 0) {
+        if (additionalDeposits.additionalLimit === 0 || additionalIntervalCounter <= additionalDeposits.additionalLimit) {
+          switch (additionalDeposits.additionalAmountInterval) {
+            case 'daily': {
               additionalIntervalCounter++;
               currentValue += additionalDeposits.additionalAmount;
+              break;
             }
+            case 'weekly': {
+              if (currentDay % 7 === 0) {
+                additionalIntervalCounter++;
+                currentValue += additionalDeposits.additionalAmount;
+              }
+              break;
+            }
+            case 'bi-weekly': {
+              if (currentDay % 14 === 0) {
+                additionalIntervalCounter++;
+                currentValue += additionalDeposits.additionalAmount;
+              }
 
-            break;
+              break;
+            }
+            case 'monthly': {
+              if (currentDay % 30 === 0) {
+                additionalIntervalCounter++;
+                currentValue += additionalDeposits.additionalAmount;
+              }
+
+              break;
+            }
           }
         }
       }

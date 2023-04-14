@@ -1,11 +1,17 @@
 <script lang="ts">
   import AnimatedFlipboardText from "./AnimatedFlipboardText.svelte";
-  import { formatNumberUSD } from "../logic/utils";
+  import {formatNumberUSD} from "../logic/utils";
+  import {formatNumber} from "../logic/utils.js";
 
   export let animate = false;
   export let number: number;
 
-  $: formattedNumber = formatNumberUSD( number);
+  export let prefix = '';
+  export let suffix = '';
+
+  export let withDecimals = true;
+
+  $: formattedNumber = withDecimals ? formatNumberUSD(number) : formatNumber(number);
 </script>
 
 <style>
@@ -17,9 +23,9 @@
 {#if animate}
   {#key formattedNumber}
     <AnimatedFlipboardText>
-      {formattedNumber}
+      {prefix}{formattedNumber}{suffix}
     </AnimatedFlipboardText>
   {/key}
 {:else}
-  <span>{formattedNumber}</span>
+  <span>{prefix}{formattedNumber}{suffix}</span>
 {/if}

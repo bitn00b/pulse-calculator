@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { ActionIcon, Alert, Badge, Button, Divider, Paper, Stack, UnstyledButton } from "@svelteuidev/core";
+  import {ActionIcon, Alert, Badge, Button, Divider, Paper, Stack, UnstyledButton} from "@svelteuidev/core";
   import FormattedNumber from "./components/FormattedNumber.svelte";
   import TippingModal from "./TippingModal.svelte";
-  import { principalInputDelayed, totalProfit } from "./logic/store";
+  import {principalInputDelayed, totalProfit} from "./logic/store";
   import SettingPanel from "./SettingPanel.svelte";
-  import { InfoCircled } from "radix-icons-svelte";
+  import {InfoCircled} from "radix-icons-svelte";
   import FloatingFooter from "./Footer.svelte";
   import HeaderRow from "./HeaderRow.svelte";
-  import { enableAnimations, noConfigModal, showDisclaimer } from "./logic/settings.js";
-  import { percentADay, retriggerCalc, totalReferrerCut } from "./logic/store.js";
+  import {enableAnimations, noConfigModal, showDisclaimer} from "./logic/settings.js";
+  import {percentADay, retriggerCalc, totalReferrerCut} from "./logic/store.js";
   import SettingsReadOnlyPanelButton from "./SettingsReadOnlyPanelButton.svelte";
-  import { isSmallDevice } from "./logic/constants.js";
+  import {isSmallDevice} from "./logic/constants.js";
   import DetailColumn from "./DetailColumn.svelte";
   import TrackUsageTime from "./TrackUsageTime.svelte";
-  import { Grid } from "./components/Grid";
+  import {Grid} from "./components/Grid";
   import Icon from 'svelte-icons-pack/Icon.svelte';
   import BiGlobe from "svelte-icons-pack/bi/BiGlobe";
   import BiLogoTelegram from "svelte-icons-pack/bi/BiLogoTelegram";
@@ -118,7 +118,7 @@
               </div>
             </GridCol>
             <GridCol sm={6} xs={6}>
-              <div class="top-label-tile">
+              <div class="top-label-tile last">
                 Total referrer Profit: <br/>
                 <b>$
                   <FormattedNumber animate={$enableAnimations} number={$totalReferrerCut} notation="standard"/>
@@ -166,6 +166,10 @@
     word-wrap: break-word;
     min-height: 4rem;
     overflow-y: clip;
+
+    &.last {
+      text-align: end;
+    }
   }
 
   .disclaimer-box {

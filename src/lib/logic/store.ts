@@ -1,17 +1,18 @@
-import { derived, writable } from "svelte/store";
-import { debounce } from 'svelte-reactive-debounce'
-import type { Readable } from "svelte/types/runtime/store";
-import { get_store_value } from "svelte/internal";
-import { averageOfNumbers, sumPropertyOfArray } from "./utils";
-import type { IterationResult } from "./types";
-import { increaseCalculationCounter, increaseRandomInterestCounter } from "./tracking-state";
-import { minDatePickerDate } from "./constants";
-import { localStoredSetting } from "./store-functions";
+import {derived, writable} from "svelte/store";
+import {debounce} from 'svelte-reactive-debounce'
+import type {Readable} from "svelte/types/runtime/store";
+import {get_store_value} from "svelte/internal";
+import {averageOfNumbers, sumPropertyOfArray} from "./utils";
+import type {IterationResult} from "./types";
+import {increaseCalculationCounter, increaseRandomInterestCounter} from "./tracking-state";
+import {minDatePickerDate} from "./constants";
+import {localStoredSetting} from "./store-functions";
 
 export type AdditionalDepositsSettings = {
   additionalAmount: number;
   additionalAmountInterval: string;
   additionalLimit: number;
+  additionalVolumeBusdAmount: number;
 }
 
 export type WithdrawSettings = {
@@ -52,6 +53,8 @@ export const additionalInterval = writable('daily');
 export const additionalLimit = writable(0);
 
 
+export const additionalVolumeBusdAmount = writable(0);
+
 export const stateTax = writable(0);
 
 // Modals
@@ -64,12 +67,14 @@ export const principalInputDelayed = debounce(initialAmountSelected, 250);
 const additionalDeposits = derived([
   debounce(additionalAmount, 250),
   additionalInterval,
-  debounce(additionalLimit, 250)
+  debounce(additionalLimit, 250),
+  debounce(additionalVolumeBusdAmount, 250),
 ], values => {
   return {
     additionalAmount: values[0],
     additionalAmountInterval: values[1],
-    additionalLimit: values[2]
+    additionalLimit: values[2],
+    additionalVolumeBusdAmount: values[3]
   } as AdditionalDepositsSettings;
 });
 
