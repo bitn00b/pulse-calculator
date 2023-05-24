@@ -8,7 +8,7 @@
     additionalVolumeBusdAmount,
     dateFormat,
     dateFormatList,
-    first80Days,
+    firstIterationDays,
     initialAmountSelected,
     iterations,
     percentADay,
@@ -22,6 +22,7 @@
     isSmallDevice,
     iterationsList,
     minDatePickerDate,
+    nonVIPDays,
     percentList
   } from "./logic/constants";
   import {enableAnimations, noConfigModal} from "./logic/settings";
@@ -127,8 +128,11 @@
   </GridCol>
 
   {#if !$pulseVip}
-    <GridCol xs={12} md={8} style="align-self: end;padding-bottom: 0.75rem;">
-      <Switch bind:checked={$first80Days} label="First Iteration 80 Days?" class="inline-flex"/>
+    <GridCol xs={12} md={4} style="align-self: end;padding-bottom: 0.75rem;">
+        <NativeSelect data={nonVIPDays}
+                  label="First Iteration"
+                  bind:value={$firstIterationDays}
+    />
     </GridCol>
   {/if}
 

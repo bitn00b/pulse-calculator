@@ -1,8 +1,22 @@
-import { derived } from "svelte/store";
-import { useViewportSize } from "@svelteuidev/composables";
-import { theme } from "@svelteuidev/core";
+import {derived} from "svelte/store";
+import {useViewportSize} from "@svelteuidev/composables";
+import {theme} from "@svelteuidev/core";
 
 export const additionalDepositTypes = ['daily', 'weekly', 'bi-weekly', 'monthly'];
+export const nonVIPDays = [
+  {
+    label: '60 Days',
+    value: '60'
+  },
+  {
+    label: '80 Days - Presale participants',
+    value: '80'
+  },
+  {
+    label: '90 Days - Raffle participants',
+    value: '90'
+  }
+];
 
 export const iterationsList = [1, 2, 3, 4, 6, 12, 18].map(i => ({
   label: i.toString(),

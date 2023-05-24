@@ -45,7 +45,7 @@ export function interestForIterations (
     pulseVip,
     initial,
     percentADay,
-    first80Days,
+    firstIterationDays,
     additionalDeposits,
     withdrawSettings
   }: InterestForIterationSettings
@@ -72,7 +72,9 @@ export function interestForIterations (
   for (let iteration = 1; iteration <= iterationCount; iteration++) {
     const startOfIteration = initial;
 
-    const daysToCalculate = iteration === 1 && maxDays === 60 && first80Days ? 80 : maxDays;
+    const daysToCalculate = iteration === 1 && maxDays === 60
+      ? firstIterationDays
+      : maxDays;
 
     const interests: InterestEntry[] = [];
 

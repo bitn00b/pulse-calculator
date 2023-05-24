@@ -3,12 +3,12 @@
     additionalAmount,
     additionalInterval,
     days,
-    first80Days,
+    firstIterationDays,
     initialAmountSelected,
     iterations,
     percentADay
   } from "./logic/store.js";
-  import { Code } from "@svelteuidev/core";
+  import {Code} from "@svelteuidev/core";
   import InitialAmount from "./reuseable-parts/PrincipalAmount.svelte";
 
   $: percentADayLabel = $percentADay < 0 ? 'Random ' : $percentADay - 100;
@@ -21,9 +21,7 @@
     Days at <b><Code color="green">{percentADayLabel}%</Code></b>/Day
   </div>
 
-  {#if $first80Days}
-    <div>First Iteration 80 Days |</div>
-  {/if}
+  <div>First Iteration {$firstIterationDays} Days |</div>
 
   {#if $additionalAmount}
     <div>Additional deposits of <b><Code color="orange">${$additionalAmount} {$additionalInterval}</Code></b>
