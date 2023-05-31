@@ -10,9 +10,10 @@
     dateFormatList,
     firstIterationDays,
     initialAmountSelected,
+    isVIP,
+    iterationDays,
     iterations,
     percentADay,
-    pulseVip,
     startDay,
     stateTax,
     withdrawPercentInVFX
@@ -23,6 +24,7 @@
     iterationsList,
     minDatePickerDate,
     nonVIPDays,
+    normalDaysList,
     percentList
   } from "./logic/constants";
   import {enableAnimations, noConfigModal} from "./logic/settings";
@@ -120,15 +122,15 @@
                   value={$percentADay}
     />
   </GridCol>
-  <GridCol xs={12} md={4}>
-    <Switch bind:checked={$pulseVip}
-            label="Pulse VIP [100 Days | 500k limit]"
+   <GridCol xs={12} md={6} style="align-self: end;padding-bottom: 0.75rem;">
+        <NativeSelect data={normalDaysList}
+                  label="Iteration Days"
+                  bind:value={$iterationDays}
     />
+    </GridCol>
 
-  </GridCol>
-
-  {#if !$pulseVip}
-    <GridCol xs={12} md={4} style="align-self: end;padding-bottom: 0.75rem;">
+  {#if !$isVIP}
+    <GridCol xs={12} md={6} style="align-self: end;padding-bottom: 0.75rem;">
         <NativeSelect data={nonVIPDays}
                   label="First Iteration"
                   bind:value={$firstIterationDays}

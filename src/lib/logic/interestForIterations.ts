@@ -42,7 +42,7 @@ function randomNumberBetweenZeroAnd (max) {
 export function interestForIterations (
   {
     iterationCount = 1,
-    pulseVip,
+    iterationDays,
     initial,
     percentADay,
     firstIterationDays,
@@ -61,8 +61,9 @@ export function interestForIterations (
 
   setAdditionalDepositsDefaults(additionalDeposits);
 
-  const maxDays = pulseVip ? 100 : 60;
-  const MAX_TO_COMPOUND = pulseVip ? MAX_TO_COMPOUND_VIP : MAX_TO_COMPOUND_NOVIP;
+  const maxDays = iterationDays;
+  const isVIP = [100,110].includes(iterationDays);
+  const MAX_TO_COMPOUND = isVIP ? MAX_TO_COMPOUND_VIP : MAX_TO_COMPOUND_NOVIP;
 
   let currentDay = 0; // maybe needs a better name - make a PR^^
 
@@ -72,8 +73,8 @@ export function interestForIterations (
   for (let iteration = 1; iteration <= iterationCount; iteration++) {
     const startOfIteration = initial;
 
-    const daysToCalculate = iteration === 1 && maxDays === 60
-      ? firstIterationDays
+    const daysToCalculate = iteration === 1 && !isVIP
+      ? (firstIterationDays < maxDays ? maxDays : firstIterationDays) // if the first iteration setting is lower than the 70
       : maxDays;
 
     const interests: InterestEntry[] = [];

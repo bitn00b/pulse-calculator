@@ -3,6 +3,25 @@ import {useViewportSize} from "@svelteuidev/composables";
 import {theme} from "@svelteuidev/core";
 
 export const additionalDepositTypes = ['daily', 'weekly', 'bi-weekly', 'monthly'];
+export const normalDaysList = [
+  {
+    label: '60 Days',
+    value: '60'
+  },
+  {
+    label: '70 Days - Raffle participants',
+    value: '70'
+  },
+  {
+    label: '100 Days - Pulse VIP - 500k USDT Max',
+    value: '100'
+  },
+  {
+    label: '110 Days - Pulse VIP - Raffle participants',
+    value: '110'
+  }
+];
+
 export const nonVIPDays = [
   {
     label: '60 Days',
