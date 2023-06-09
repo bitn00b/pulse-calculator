@@ -1,8 +1,6 @@
-import { writable } from "svelte/store";
-import type { Readable } from "svelte/types/runtime/store";
-import { Observable } from "rxjs";
+import {writable} from "svelte/store";
 
-export function localStoredSetting<TWritableType> (key: string, defaultValue: string, mapper: (savedValue: string) => TWritableType) {
+export function localStoredSetting<TWritableType>(key: string, defaultValue: string, mapper: (savedValue: string) => TWritableType) {
   const localStoredValue = localStorage.getItem(key) ?? defaultValue;
 
   const writableToReturn = writable(mapper(localStoredValue));
@@ -12,7 +10,7 @@ export function localStoredSetting<TWritableType> (key: string, defaultValue: st
   return writableToReturn;
 }
 
-export function localStoredMappedSetting<TWritableType> (
+export function localStoredMappedSetting<TWritableType>(
   key: string,
   storedToValue: (savedValue: string) => TWritableType,
   valueToStored: (currentValue: TWritableType) => string
@@ -25,17 +23,3 @@ export function localStoredMappedSetting<TWritableType> (
 
   return writableToReturn;
 }
-
-export function asRxObservable<T> (svelteStore: Readable<T>): Observable<T> {
-  return new Observable(subscriber => {
-    const unsub = svelteStore.subscribe(value => {
-      subscriber.next(value);
-    });
-
-    return () => {
-      unsub();
-    }
-  })
-}
-
-
