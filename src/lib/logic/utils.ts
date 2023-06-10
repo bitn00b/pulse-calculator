@@ -1,11 +1,13 @@
 /* yaaay a utils file */
 
 import nf from '@tuplo/numberfmt';
+import type {Writable} from "svelte/store";
+import {get_store_value} from "svelte/internal";
 
 const nfpUSD = nf.partial('0,0.00');
 const nfp = nf.partial('0,0');
 
-export function formatNumberUSD (value: number): string {
+export function formatNumberUSD(value: number): string {
   if (!value) {
     return '';
   }
@@ -14,7 +16,7 @@ export function formatNumberUSD (value: number): string {
 }
 
 
-export function formatNumber (value: number): string {
+export function formatNumber(value: number): string {
   if (!value) {
     return '';
   }
@@ -23,12 +25,12 @@ export function formatNumber (value: number): string {
 }
 
 
-export function averageOfNumbers (numbers: number[]) {
+export function averageOfNumbers(numbers: number[]) {
   return numbers.reduce((previousValue, currentValue) => previousValue + currentValue, 0) / numbers.length;
 }
 
 
-export function createChunks<TElement> (
+export function createChunks<TElement>(
   sourceArray: TElement[], chunkSize: number
 ) {
   return sourceArray.reduce((resultArray, item, index) => {
@@ -41,11 +43,15 @@ export function createChunks<TElement> (
     resultArray[chunkIndex].push(item)
 
     return resultArray
-  }, [])
+  }, [] as TElement[][])
 }
 
-export function sumPropertyOfArray<TElement> (source: TElement[], chooseProp: (el: TElement) => number) {
+export function sumPropertyOfArray<TElement>(source: TElement[], chooseProp: (el: TElement) => number) {
   return source.reduce((prev, cur) => {
     return prev + chooseProp(cur);
   }, 0);
+}
+
+export function push<TInner>(writable: Writable<TInner[]>, ...itemsToAdd: TInner[]) {
+  writable.set([...get_store_value(writable), ...itemsToAdd]);
 }

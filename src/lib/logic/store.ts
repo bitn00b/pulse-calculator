@@ -3,38 +3,26 @@ import {debounce} from 'svelte-reactive-debounce'
 import type {Readable} from "svelte/types/runtime/store";
 import {get_store_value} from "svelte/internal";
 import {averageOfNumbers, sumPropertyOfArray} from "./utils";
-import type {IterationResult} from "./types";
+import type {
+  AdditionalDepositsSettings,
+  CalculatorModes,
+  InterestForIterationSettings,
+  IterationResult,
+  MiscSettings,
+  WithdrawSettings
+} from "./types";
 import {increaseCalculationCounter, increaseRandomInterestCounter} from "./tracking-state";
 import {minDatePickerDate} from "./constants";
-import {localStoredSetting} from "./store-functions";
+import {localStoredSetting} from "./setting-functions";
+import {calculateTotalProfit} from "./store-functions";
 
-export type AdditionalDepositsSettings = {
-  additionalAmount: number;
-  additionalAmountInterval: string;
-  additionalLimit: number;
-  additionalVolumeBusdAmount: number;
-}
+// Mode
 
-export type WithdrawSettings = {
-  withdrawPercentInVFX: number; // rest will be withdrawn as USDT
-}
-
-export type MiscSettings = {
-  stateTax: number; // 0-100percent
-}
-
-export type InterestForIterationSettings = {
-  iterationCount: number;
-  iterationDays: number;
-  initial: number;
-  percentADay: number;
-  firstIterationDays: number;
-  additionalDeposits: AdditionalDepositsSettings;
-  withdrawSettings: WithdrawSettings;
-  miscSettings: MiscSettings;
-}
+export const currentMode = writable<CalculatorModes>('calc');
 
 // Inputs
+export const wenModeTargetProfitAmountSelected = writable(50000);
+
 export const initialAmountSelected = writable(100);
 export const iterations = writable(4);
 export const percentADay = writable(100.5);
@@ -115,11 +103,11 @@ export const combinedData = derived([
   withdrawSettings
 }) as InterestForIterationSettings);
 
-function delayMsAsync (ms: number) {
+function delayMsAsync(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function delayedIterationReadableStore<TSource, TIterationResult> (
+function delayedIterationReadableStore<TSource, TIterationResult>(
   source: Readable<TSource>,
   getIterable: (source: TSource) => Iterable<TIterationResult>,
   emptyValue: TIterationResult
@@ -141,35 +129,44 @@ function delayedIterationReadableStore<TSource, TIterationResult> (
 
 // dev mode doesn't work in firefox, some "import * from" not supported I guess?
 // and vite not compiling it to es during dev-mode - couldnt find any config for it yet
-const worker = new Worker(
+export const worker = new Worker(
   new URL('./interestCalculatorWorker.ts', import.meta.url),
   {type: 'module'}
 );
 
 const retriggerForRandom = writable(0);
 
-export function retriggerCalc () {
+export function retriggerCalc() {
   retriggerForRandom.set(get_store_value(retriggerForRandom) + 1);
   increaseRandomInterestCounter();
 }
 
+// just needed to prevent the stats counter^^
 let firstCalculation = false;
+
+function maybeIncreaseCounter() {
+  if (!firstCalculation) {
+    firstCalculation = true;
+  } else {
+    increaseCalculationCounter();
+  }
+}
 
 // refactor this someday, extract the webworker connection, so that its not always add and removes the listener
 export const interestPerIteration: Readable<IterationResult[]> = derived(
-  [combinedData, retriggerForRandom], ([values], set) => {
+  [combinedData, retriggerForRandom, currentMode], ([values, _, currentMode], set) => {
+    if (currentMode !== 'calc') {
+      return;
+    }
+
     console.info('newData to generate', values);
 
-    function workerResultCallback (ev) {
+    function workerResultCallback(ev) {
       console.info('received data', ev.data);
       set(ev.data);
     }
 
-    if (!firstCalculation) {
-      firstCalculation = true;
-    } else {
-      increaseCalculationCounter();
-    }
+    maybeIncreaseCounter();
 
     set([]);
     worker.addEventListener('message', workerResultCallback);
@@ -182,7 +179,8 @@ export const interestPerIteration: Readable<IterationResult[]> = derived(
     }
   });
 
-export const totalProfit = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.profit + (el.withdrawInVFX?.amountAfterFee ?? 0)));
+export const totalProfit = derived(interestPerIteration, values =>
+  calculateTotalProfit(values));
 
 export const totalUSDT = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.profit));
 
@@ -207,7 +205,7 @@ export const totalCuts = derived(interestPerIteration, iterations => iterations.
 
 export const totalAveragePercent = derived(interestPerIteration, iterations => averageOfNumbers(iterations.map(i => i.averagePercent)));
 
-export const days =  derived(iterationDays,  iterationDays => Number(iterationDays));
+export const days = derived(iterationDays, iterationDays => Number(iterationDays));
 export const additionalIntervalLabel = derived(additionalInterval, interval => {
   switch (interval) {
     case 'daily':

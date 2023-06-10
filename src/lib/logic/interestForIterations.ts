@@ -1,7 +1,13 @@
-import type {AdditionalDepositsSettings, InterestForIterationSettings} from "./store";
-import {nanoid} from "nanoid";
-import {averageOfNumbers} from "./utils";
-import type {InterestEntry, IterationResult, IterationWithdrawAsVFX} from "./types";
+import type {
+  AdditionalDepositsSettings,
+  InterestEntry,
+  InterestForIterationSettings,
+  IterationResult,
+  IterationWithdrawAsVFX
+} from "./types.ts";
+import {nanoid} from "nanoid"; // todo maybe replace it by custom code
+// @ts-ignore
+import {averageOfNumbers} from "./utils.ts";
 
 const MAX_TO_COMPOUND_NOVIP = 100_000;
 const MAX_TO_COMPOUND_VIP = 500_000;
@@ -13,7 +19,7 @@ const PULSE_WITHDRAW_FEE = 0.05;
 const REFERRER_CUT = 0.05;
 
 
-function setAdditionalDepositsDefaults (additionalDeposits: AdditionalDepositsSettings) {
+function setAdditionalDepositsDefaults(additionalDeposits: AdditionalDepositsSettings) {
   if (!additionalDeposits.additionalAmount) {
     additionalDeposits.additionalAmount = 0;
   }
@@ -23,7 +29,7 @@ function setAdditionalDepositsDefaults (additionalDeposits: AdditionalDepositsSe
   }
 }
 
-function RNG (seed) {
+function RNG(seed) {
   var m_as_number = 2 ** 53 - 111
   var m = 2n ** 53n - 111n
   var a = 5667072534355537n
@@ -35,11 +41,11 @@ function RNG (seed) {
 
 const myRandomGenerator = RNG(Date.now());
 
-function randomNumberBetweenZeroAnd (max) {
+function randomNumberBetweenZeroAnd(max: number) {
   return Math.floor(myRandomGenerator() * (max + 1));
 }
 
-export function interestForIterations (
+export function interestForIterations(
   {
     iterationCount = 1,
     iterationDays,
@@ -62,7 +68,7 @@ export function interestForIterations (
   setAdditionalDepositsDefaults(additionalDeposits);
 
   const maxDays = iterationDays;
-  const isVIP = [100,110].includes(iterationDays);
+  const isVIP = [100, 110].includes(iterationDays);
   const MAX_TO_COMPOUND = isVIP ? MAX_TO_COMPOUND_VIP : MAX_TO_COMPOUND_NOVIP;
 
   let currentDay = 0; // maybe needs a better name - make a PR^^
@@ -241,8 +247,6 @@ export function interestForIterations (
 
     // setting the initial for the next iteration
     initial = amountAfterFees < MAX_TO_COMPOUND ? amountAfterFees : MAX_TO_COMPOUND;
-
-    // yield [...result];
   }
 
   return result;
