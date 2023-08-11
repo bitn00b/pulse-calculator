@@ -10,13 +10,13 @@
     isVIP,
     iterationDays,
     wenModeTargetProfitAmountSelected
-  } from "./logic/store";
-  import {additionalDepositTypes, nonVIPDays, normalDaysList} from "./logic/constants";
+  } from "../../logic/store.ts";
+  import {additionalDepositTypes, nonVIPDays, normalDaysList} from "../../logic/constants.ts";
 
   // noinspection ES6UnusedImports
   import RangeSlider from "svelte-range-slider-pips";
-  import {Grid} from "./components/Grid";
-  import SettingPanelTokenAmount from "./reuseable-parts/SettingPanelTokenAmount.svelte";
+  import {Grid} from "../../components/Grid";
+  import SettingPanelTokenAmount from "../../reuseable-parts/SettingPanelTokenAmount.svelte";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;

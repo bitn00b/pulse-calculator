@@ -23,11 +23,11 @@
   import {findIterationWhenProfitIsAbove} from "../../logic/store-functions.ts";
   import {get_store_value} from "svelte/internal";
   import {writable} from "svelte/store";
-  import {push} from "../../logic/utils.ts";
   import {Grid} from "../../components/Grid";
   import Profit from "../../reuseable-parts/Profit.svelte";
   import {InfoCircled} from "radix-icons-svelte";
   import {increaseWenModeCounter} from "../../logic/tracking-state.ts";
+  import {push} from "../../logic/svelte-utils.ts";
 
   const {Col: GridCol} = Grid;
 
@@ -122,7 +122,7 @@
     foundForPercent.set([]);
 
     increaseWenModeCounter();
-    
+
     const withdrawSettings: WithdrawSettings = {
       withdrawPercentInVFX: 0
     }
@@ -185,11 +185,6 @@
    <Alert icon={InfoCircled} title="Note" color="yellow">
       These are not results for your selected settings.
    </Alert>
-   <br/>
-{/if}
-
-{#if $foundForPercent.length === 0 && !calculationInProgress}
-   "Wen?!"-Mode goes through all Daily percentages and tries to find in which iterations you'd reach your target amount.
    <br/>
 {/if}
 

@@ -17,16 +17,14 @@
     startDay,
     stateTax,
     withdrawPercentInVFX
-  } from "./logic/store";
+  } from "../../logic/store.ts";
   import {
     additionalDepositTypes,
-    isSmallDevice,
     iterationsList,
-    minDatePickerDate,
     nonVIPDays,
     normalDaysList,
     percentList
-  } from "./logic/constants";
+  } from "../../logic/constants.ts";
 
   // noinspection ES6UnusedImports
   import RangeSlider from "svelte-range-slider-pips";
@@ -34,9 +32,10 @@
 
   import {debounce} from 'svelte-reactive-debounce'
   import {DateInput} from "date-picker-svelte";
-  import {Grid} from "./components/Grid";
+  import {Grid} from "../../components/Grid";
 
-  import SettingPanelTokenAmount from "./reuseable-parts/SettingPanelTokenAmount.svelte";
+  import SettingPanelTokenAmount from "../../reuseable-parts/SettingPanelTokenAmount.svelte";
+  import {isSmallDevice, minDatePickerDate} from "../../logic/computed.ts";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
