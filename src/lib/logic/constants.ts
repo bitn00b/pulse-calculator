@@ -1,7 +1,3 @@
-import {derived} from "svelte/store";
-import {useViewportSize} from "@svelteuidev/composables";
-import {theme} from "@svelteuidev/core";
-
 export const additionalDepositTypes = ['daily', 'weekly', 'bi-weekly', 'monthly'];
 export const normalDaysList = [
   {
@@ -57,23 +53,15 @@ export const percentList =
   ];
 
 
-export const viewport = useViewportSize();
 
-const xsBreakpoint = theme.breakpoints.xs.value;
+export const MAX_TO_COMPOUND_NOVIP = 100_000;
+export const MAX_TO_COMPOUND_VIP = 500_000;
 
-let lastWidth = 0;
-const widthChanged = derived(viewport, ({width}, set) => {
-  if (lastWidth !== width) {
-    set(width);
-    lastWidth = width;
+export function getDaysMeta (numberOfDays: number) {
+  const isVIP = [100, 110].includes(numberOfDays);
+  const MAX_TO_COMPOUND = isVIP ? MAX_TO_COMPOUND_VIP : MAX_TO_COMPOUND_NOVIP;
+
+  return {
+    isVIP, MAX_TO_COMPOUND
   }
-});
-
-export const isSmallDevice = derived(widthChanged, width => {
-  return width < xsBreakpoint;
-})
-
-
-export const modalSize = derived(isSmallDevice, (smallDevice) => smallDevice ? '100%' : 'lg');
-
-export const minDatePickerDate = new Date(2023, 2, 20);
+}
