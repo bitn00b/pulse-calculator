@@ -1,8 +1,6 @@
 /* yaaay a utils file */
 
 import nf from '@tuplo/numberfmt';
-import type {Writable} from "svelte/store";
-import {get_store_value} from "svelte/internal";
 
 const nfpUSD = nf.partial('0,0.00');
 const nfp = nf.partial('0,0');
@@ -50,8 +48,4 @@ export function sumPropertyOfArray<TElement>(source: TElement[], chooseProp: (el
   return source.reduce((prev, cur) => {
     return prev + chooseProp(cur);
   }, 0);
-}
-
-export function push<TInner>(writable: Writable<TInner[]>, ...itemsToAdd: TInner[]) {
-  writable.set([...get_store_value(writable), ...itemsToAdd]);
 }

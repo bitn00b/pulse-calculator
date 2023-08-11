@@ -71,4 +71,4 @@ export type InterestForIterationSettings = {
   miscSettings: MiscSettings;
 }
 
-export type CalculatorModes = 'calc' | 'wen';
+export type CalculatorModes = 'calc' | 'wen' | 'whale';
