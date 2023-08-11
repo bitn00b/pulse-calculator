@@ -1,12 +1,13 @@
 <script lang="ts">
-  import {interestPerIteration} from "../../logic/store.ts";
-  import {formatNumberUSD} from "../../logic/utils.ts";
+  import {currentMode, interestPerIteration, percentADay, retriggerCalc} from "../../logic/store";
+  import {formatNumberUSD} from "../../logic/utils";
   import {derived, writable} from "svelte/store";
   import {debounce} from 'svelte-reactive-debounce'
   import SummaryCalculation from "./SummaryCalculation.svelte";
   import IterationTile from "../../IterationTile.svelte";
   import Select from 'svelte-select';
-  import {saveCurrentUsageTime} from "../../logic/tracking-state.js";
+  import {saveCurrentUsageTime} from "../../logic/tracking-state";
+  import {Button} from "@svelteuidev/core";
 
 
   type LabelValue = {
@@ -43,6 +44,13 @@
     return iterationList.find(it => it.iteration === selectedIteration.value);
   });
 </script>
+
+{#if $percentADay === -1 && $currentMode === 'calc'}
+   <Button on:click={() => retriggerCalc()} fullSize variant='gradient' uppercase ripple>
+      Retrigger Random Interest
+   </Button>
+   <br/>
+{/if}
 
 <Select items={iterationSelectList} bind:value={$selectedIterationStore}
         on:change={() => saveCurrentUsageTime()}

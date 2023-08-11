@@ -7,4 +7,8 @@ import Col from './Col/Col.svelte';
 _Grid.Col = Col;
 const Grid = _Grid as typeof _Grid & { Col: typeof Col };
 
-export { Grid };
+
+// usually not needed BUT so that the IDE says "its ok" ^^
+const {Col: GridCol} = Grid;
+
+export {Grid, GridCol}
