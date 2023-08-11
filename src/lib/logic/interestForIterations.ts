@@ -8,9 +8,7 @@ import type {
 import {nanoid} from "nanoid"; // todo maybe replace it by custom code
 // @ts-ignore
 import {averageOfNumbers} from "./utils.ts";
-
-const MAX_TO_COMPOUND_NOVIP = 100_000;
-const MAX_TO_COMPOUND_VIP = 500_000;
+import {getDaysMeta} from "./constants.ts";
 
 const VFX_SELL_TAX = 0.09;
 const PULSE_WITHDRAW_FEE = 0.05;
@@ -68,8 +66,7 @@ export function interestForIterations(
   setAdditionalDepositsDefaults(additionalDeposits);
 
   const maxDays = iterationDays;
-  const isVIP = [100, 110].includes(iterationDays);
-  const MAX_TO_COMPOUND = isVIP ? MAX_TO_COMPOUND_VIP : MAX_TO_COMPOUND_NOVIP;
+  const {isVIP, MAX_TO_COMPOUND} = getDaysMeta(maxDays);
 
   let currentDay = 0; // maybe needs a better name - make a PR^^
 

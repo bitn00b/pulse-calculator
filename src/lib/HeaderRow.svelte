@@ -4,7 +4,7 @@
   import {derived, readable} from "svelte/store";
   import dayjs from "dayjs";
   import AnimatedFlipboardText from "./components/AnimatedFlipboardText.svelte";
-  import {isSmallDevice, modalSize} from "./logic/constants.js";
+  import {isSmallDevice, modalSize} from "./logic/computed";
   import {formatNumber} from "./logic/utils.js";
   import {InfoCircled} from "radix-icons-svelte";
 
@@ -69,7 +69,11 @@
   let active = 0;
 
   $: {
-    currentMode.set(active === 0 ? 'calc' : 'wen')
+    currentMode.set(active === 0
+      ? 'calc'
+      : active === 1
+        ? 'wen'
+        : 'whale');
   }
 
 </script>
@@ -77,56 +81,60 @@
 <div class="fixed-header">
    <div class="grid-styles">
 
-
-      <Grid>
-         <GridCol offsetLg={2} lg={8} xs={12}>
-            <div class="inner-content {$isSmallDevice ? 'small-device' : ''}">
-               <Grid>
-                  <GridCol lg={5} xs={6} style="padding: 8px" class="hide-tab-content">
-                     <Tabs variant="pills" color="black" grow="true"
-                           on:change={e => active = e.detail.index}>
-                        Mode:
-                        <Tab label="Calculator" tabKey='calc'></Tab>
-                        <Tab tabKey='wen'>
-                           <div slot="label">
-                              Wen?!
-                              <Badge variant='gradient' gradient={{ from: 'violet', to: 'blue' }}>
-                                 Beta
-                              </Badge>
-                           </div>
-                        </Tab>
-                     </Tabs>
-
-                  </GridCol>
-
-                  <GridCol lg={7} xs={6} style="padding: 8px">
-                     <div class="grid-cell-2" style="display: none">
-                        {#if !$untilPublicStart.inThePast}
-                           {#if $untilPublicStart.today}
-                              🚀 T-O-D-A-Y 🚀
-                           {:else}
-                              {#key $untilPublicStart.formattedNumber}
-                                 <UnstyledButton aria-label="Open Countdown Dialog"
-                                                 on:click={() => showCountdownDialog = true}>
-
-                                    <Badge size="lg" radius="sm" variant="outline"
-                                           style="cursor: pointer; padding-left: 0.25rem; padding-right: 0.25rem">
-                                       🚀⏰
-                                       <AnimatedFlipboardText>
-                                          {$untilPublicStart.formattedNumber}
-                                       </AnimatedFlipboardText>
-                                    </Badge>
-                                    <InfoCircled size={14} style="vertical-align: middle"/>
-                                 </UnstyledButton>
-                              {/key}
-                           {/if}
-                        {/if}
+      <div class="inner-content {$isSmallDevice ? 'small-device' : ''}">
+         <Grid>
+            <GridCol lg={5} xs={6} style="padding: 8px" class="hide-tab-content">
+               <Tabs variant="pills" color="black" grow="true"
+                     on:change={e => active = e.detail.index}>
+                  <Tab tabKey='calc'>
+                     <div slot="label" style="white-space: nowrap">
+                        Calculator 🧮
                      </div>
-                  </GridCol>
-               </Grid>
-            </div>
-         </GridCol>
-      </Grid>
+                  </Tab>
+                  <Tab tabKey='wen'>
+                     <div slot="label">
+                        Wen?! 🔍
+                        <Badge variant='gradient' gradient={{ from: 'violet', to: 'blue' }}>
+                           Beta
+                        </Badge>
+                     </div>
+                  </Tab>
+                  <Tab tabKey='whale' disabled>
+                     <div slot="label">
+                        Upcoming Mode
+                     </div>
+                  </Tab>
+               </Tabs>
+
+            </GridCol>
+
+            <GridCol lg={6} xs={6} style="padding: 8px;display: none">
+               <div class="grid-cell-2" style="display: none">
+                  {#if !$untilPublicStart.inThePast}
+                     {#if $untilPublicStart.today}
+                        🚀 T-O-D-A-Y 🚀
+                     {:else}
+                        {#key $untilPublicStart.formattedNumber}
+                           <UnstyledButton aria-label="Open Countdown Dialog"
+                                           on:click={() => showCountdownDialog = true}>
+
+                              <Badge size="lg" radius="sm" variant="outline"
+                                     style="cursor: pointer; padding-left: 0.25rem; padding-right: 0.25rem">
+                                 🚀⏰
+                                 <AnimatedFlipboardText>
+                                    {$untilPublicStart.formattedNumber}
+                                 </AnimatedFlipboardText>
+                              </Badge>
+                              <InfoCircled size={14} style="vertical-align: middle"/>
+                           </UnstyledButton>
+                        {/key}
+                     {/if}
+                  {/if}
+               </div>
+            </GridCol>
+         </Grid>
+      </div>
+
    </div>
 </div>
 

@@ -12,7 +12,7 @@ import type {
   WithdrawSettings
 } from "./types";
 import {increaseCalculationCounter, increaseRandomInterestCounter} from "./tracking-state";
-import {minDatePickerDate} from "./constants";
+import {minDatePickerDate} from "./computed.ts";
 import {localStoredSetting} from "./setting-functions";
 import {calculateTotalProfit} from "./store-functions";
 
@@ -22,6 +22,8 @@ export const currentMode = writable<CalculatorModes>('calc');
 
 // Inputs
 export const wenModeTargetProfitAmountSelected = writable(50000);
+
+export const whaleModeContractsAmountSelected = writable(2);
 
 export const initialAmountSelected = writable(100);
 export const iterations = writable(4);
@@ -193,11 +195,6 @@ export const totalDays = derived(interestPerIteration, values => values.reduce((
 export const totalReferrerCut = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
   return prev + cur.referrerCutOfIteration;
 }, 0));
-
-export const totalWithdrawFee = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.withdrawFee + (el.withdrawInVFX?.amountAfterFee ?? 0)));
-
-export const totalSellTaxed = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.sellTax));
-
 
 export const totalCuts = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
   return prev + cur.referrerCutOfIteration + cur.sellTax + cur.withdrawFee + (cur.withdrawInVFX?.withdrawFee ?? 0);

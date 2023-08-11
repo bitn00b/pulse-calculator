@@ -1,24 +1,26 @@
 <script lang="ts">
-  import {ActionIcon, Alert, Badge, Button, Divider, Paper, Stack, UnstyledButton} from "@svelteuidev/core";
+  import {ActionIcon, Button, Divider, Paper, Stack} from "@svelteuidev/core";
   import FormattedNumber from "./components/FormattedNumber.svelte";
   import TippingModal from "./TippingModal.svelte";
   import {currentMode, principalInputDelayed, totalProfit} from "./logic/store";
-  import SettingPanel from "./SettingPanel.svelte";
-  import {InfoCircled} from "radix-icons-svelte";
+  import SettingPanel from "./modes/calc/SettingPanel.svelte";
   import FloatingFooter from "./Footer.svelte";
   import HeaderRow from "./HeaderRow.svelte";
-  import {enableAnimations, showDisclaimer} from "./logic/settings.js";
+  import {enableAnimations} from "./logic/settings.js";
   import {percentADay, retriggerCalc, totalReferrerCut} from "./logic/store.js";
-  import {isSmallDevice} from "./logic/constants.js";
-  import DetailColumn from "./DetailColumn.svelte";
+  import {isSmallDevice} from "./logic/computed";
+  import DetailColumn from "./modes/calc/DetailColumn.svelte";
   import TrackUsageTime from "./TrackUsageTime.svelte";
   import {Grid} from "./components/Grid";
   import Icon from 'svelte-icons-pack/Icon.svelte';
   import BiGlobe from "svelte-icons-pack/bi/BiGlobe";
   import BiLogoTelegram from "svelte-icons-pack/bi/BiLogoTelegram";
   import Profit from "./reuseable-parts/Profit.svelte";
-  import SettingPanelWenMode from "./SettingPanelWenMode.svelte";
+  import SettingPanelWenMode from "./modes/wen/SettingPanelWenMode.svelte";
   import DetailsColumnWenMode from "./modes/wen/DetailsColumnWenMode.svelte";
+  import SettingPanelWhaleMode from "./modes/whale/SettingPanelWhaleMode.svelte";
+  import DetailsColumnWhaleMode from "./modes/whale/DetailsColumnWhaleMode.svelte";
+  import DisclaimerBoxOrButton from "./reuseable-parts/DisclaimerBoxOrButton.svelte";
 
   // usually not needed BUT so that the IDE says "its ok" ^^
   const {Col: GridCol} = Grid;
@@ -111,6 +113,12 @@
                            </b> (5% daily)
                         </div>
                      </GridCol>
+                  {:else if $currentMode === 'whale'}
+                     "Whale"-Mode goes through all Daily percentages and lists how much profit each and all MAXXED
+                     contracts will make.
+                  {:else}
+                     "Wen?!"-Mode goes through all Daily percentages and tries to find in which iterations you'd reach
+                     your target amount.
                   {/if}
                </Grid>
 
@@ -118,6 +126,8 @@
 
                {#if $currentMode === 'calc'}
                   <SettingPanel/>
+               {:else if $currentMode === 'whale'}
+                  <SettingPanelWhaleMode/>
                {:else}
                   <SettingPanelWenMode/>
                {/if}
@@ -134,6 +144,8 @@
 
          {#if $currentMode === 'calc'}
             <DetailColumn/>
+         {:else if $currentMode === 'whale'}
+            <DetailsColumnWhaleMode/>
          {:else }
             <DetailsColumnWenMode/>
          {/if}
@@ -161,12 +173,6 @@
     &.last {
       text-align: end;
     }
-  }
-
-  .disclaimer-box {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
   }
 
   .inner-button-centered {

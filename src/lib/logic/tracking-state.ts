@@ -19,6 +19,10 @@ export const randomInterestTriggered = localStoredMappedSetting<number>('totalRa
 export const wenModeTriggered = localStoredMappedSetting<number>('totalWenModeTriggered', savedValue => savedValue ? parseInt(savedValue, 10) : 0,
   currentValue => currentValue + '');
 
+export const whaleModeTriggered = localStoredMappedSetting<number>('totalWhaleModeTriggered', savedValue => savedValue ? parseInt(savedValue, 10) : 0,
+  currentValue => currentValue + '');
+
+
 export function saveCurrentUsageTime(maxSeconds?: number) {
   const secondsBeforeReset = secondsOnThePage;
   totalSecondsOnPage.update(value => {
@@ -63,6 +67,10 @@ export function increaseWenModeCounter() {
   increaseCalculationCounter();
 }
 
+export function increaseWhaleModeCounter() {
+  whaleModeTriggered.update(value => value + 1);
+  increaseCalculationCounter();
+}
 
 // first start, cause there is no focus event from TrackUsageTime
 resetTimer();
