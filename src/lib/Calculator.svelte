@@ -47,27 +47,7 @@
       <GridCol md={8} xs={12}>
          <div style="position: relative">
             <Paper>
-               {#if $showDisclaimer}
-                  <Alert icon={InfoCircled} title="Disclaimer" color="yellow" withCloseButton
-                         on:close={() => $showDisclaimer = false}>
-                     This is not an official calculator of Pulse - These numbers are simulated and not a guarantee on
-                     returns.
-                     -
-                     so keep that in mind :)
-                  </Alert>
-                  <br>
-               {:else}
-                  <div class="disclaimer-box">
-                     <UnstyledButton aria-label="Show disclaimer"
-                                     on:click={() => $showDisclaimer = true}>
-                        <Badge color="yellow" radius="sm" style="cursor: pointer">
-                           Show Disclaimer
-                        </Badge>
-                     </UnstyledButton>
-
-                  </div>
-
-               {/if}
+               <DisclaimerBoxOrButton/>
                <Grid>
                   <GridCol span={12}>
                      {#if $isSmallDevice}
