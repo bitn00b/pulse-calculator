@@ -77,3 +77,16 @@ h1 {
     height: 2rem !important;
   }
 }
+
+
+// Select CSS Vars
+// https://github.com/rob-balfre/svelte-select/blob/master/docs/theming_variables.md
+.new-select {
+  --background: var(--svelteui-colors-dark800);
+  --list-background: var(--svelteui-colors-dark500);
+  --item-hover-bg: var(--svelteui-colors-dark600);
+  --item-is-active-bg: var(--svelteui-colors-green800);
+  --border-focused: solid 1px var(--svelteui-colors-green800);
+  --border-hover: solid 1px var(--svelteui-colors-green700);
+  --border: solid 1px transparent;
+}
