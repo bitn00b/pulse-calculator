@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {type Component, Paper, Stack} from "@svelteuidev/core";
+  import {type Component, Paper, Space, Stack, Text} from "@svelteuidev/core";
   import TippingModal from "./TippingModal.svelte";
   import {currentMode} from "./logic/store";
   import FloatingFooter from "./Footer.svelte";
@@ -14,6 +14,7 @@
   import MainPanelCalc from "./modes/calc/MainPanelCalc.svelte";
   import MainPanelWen from "./modes/wen/MainPanelWen.svelte";
   import VfxButtons from "./reuseable-parts/VfxButtons.svelte";
+  import TaxFeeBreakdownNew from "./reuseable-parts/TaxFeeBreakdownTable.svelte";
 
 
   type ComponentsByModeType = {
@@ -65,6 +66,14 @@
          <svelte:component this={ComponentsByMode[$currentMode].resultsPanel}/>
 
          <TrackUsageTime/>
+         <Space h="md"></Space>
+         <div>
+            <Text size='sm'>Tax / Fee Overview:</Text>
+            <Space h="xs"></Space>
+            <Paper>
+               <TaxFeeBreakdownNew></TaxFeeBreakdownNew>
+            </Paper>
+         </div>
       </GridCol>
    </Grid>
 </Stack>

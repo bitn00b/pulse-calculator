@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {Paper, Text} from "@svelteuidev/core";
+  import {Paper, Space, Text} from "@svelteuidev/core";
   import {
     randomInterestTriggered,
     resetTimer,
@@ -19,7 +19,7 @@
 
 <br/>
 <Text size='sm'>Your Stats:</Text>
-
+<Space h="xs"></Space>
 <Paper>
 
    <table style="width: 100%">

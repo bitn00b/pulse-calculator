@@ -1,5 +1,5 @@
 <script>
-  import {principalInputDelayed, totalProfit, totalReferrerCut} from "../../logic/store";
+  import {principalInputDelayed, totalProfit} from "../../logic/store";
   import {isSmallDevice} from "../../logic/computed";
   import {enableAnimations} from "../../logic/settings";
   import Profit from "../../reuseable-parts/Profit.svelte";
@@ -25,15 +25,6 @@
             notation="standard"
             number={(100 / $principalInputDelayed) * $totalProfit}
          /> %)</span>
-      </div>
-   </GridCol>
-   <GridCol sm={6} xs={6}>
-      <div class="top-label-tile last">
-         Total referrer Profit: <br/>
-         <b>$
-            <FormattedNumber animate={$enableAnimations} number={$totalReferrerCut}
-                             notation="standard"/>
-         </b> (5% daily)
       </div>
    </GridCol>
 </Grid>
