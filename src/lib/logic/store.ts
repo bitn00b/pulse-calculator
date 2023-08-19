@@ -5,6 +5,7 @@ import {averageOfNumbers, sumPropertyOfArray} from "./utils";
 import type {
   AdditionalDepositsSettings,
   CalculatorModes,
+  FeesTotal,
   InterestForIterationSettings,
   IterationResult,
   MiscSettings,
@@ -49,6 +50,8 @@ export const stateTax = writable(0);
 
 // Modals
 export const showTippingModal = writable(false);
+
+export const showTaxBreakdownModal = writable<FeesTotal | null>(null);
 
 // Derived Data of Settings (reactive)
 

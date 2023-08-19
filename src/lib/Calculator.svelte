@@ -1,6 +1,6 @@
 <script lang="ts">
   import {type Component, Paper, Space, Stack, Text} from "@svelteuidev/core";
-  import TippingModal from "./TippingModal.svelte";
+  import TippingModal from "./modals/TippingModal.svelte";
   import {currentMode} from "./logic/store";
   import FloatingFooter from "./Footer.svelte";
   import HeaderRow from "./HeaderRow.svelte";
@@ -15,6 +15,7 @@
   import MainPanelWen from "./modes/wen/MainPanelWen.svelte";
   import VfxButtons from "./reuseable-parts/VfxButtons.svelte";
   import TaxFeeBreakdownNew from "./reuseable-parts/TaxFeeBreakdownTable.svelte";
+  import FeeBreakdownModal from "./modals/FeeBreakdownModal.svelte";
 
 
   type ComponentsByModeType = {
@@ -84,3 +85,4 @@
 <FloatingFooter/>
 
 <TippingModal/>
+<FeeBreakdownModal/>

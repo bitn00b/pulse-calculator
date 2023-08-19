@@ -1,11 +1,12 @@
 <script lang="ts">
 
-  import {Paper, Text} from "@svelteuidev/core";
+  import {ActionIcon, Paper, Text} from "@svelteuidev/core";
   import FormattedNumber from "../../components/FormattedNumber.svelte";
   import {enableAnimations} from "../../logic/settings.js";
   import {
     interestPerIteration,
     principalInputDelayed,
+    showTaxBreakdownModal,
     stateTax,
     summarizedCuts,
     totalAveragePercent,
@@ -21,6 +22,7 @@
   import {derived} from "svelte/store";
   import {sumPropertyOfArray} from "../../logic/utils.ts";
   import TaxFeeBreakdown from "../../reuseable-parts/TaxFeeBreakdownKeyValue.svelte";
+  import {InfoCircled} from "radix-icons-svelte";
 
   $: principalAndProfit = {
     principal: $principalInputDelayed,
@@ -86,7 +88,12 @@
          <td>Pulse/VFX Cuts</td>
          <td><b>$
             <FormattedNumber animate={$enableAnimations} number={$totalCuts} notation="standard"/>
-         </b></td>
+         </b>
+            <ActionIcon variant="default" style="display: inline-block"
+                        on:click={() => $showTaxBreakdownModal = $summarizedCuts} size={30}>
+               <InfoCircled/>
+            </ActionIcon>
+         </td>
       </tr>
    </table>
 

@@ -8,6 +8,8 @@
 
   export let total: number;
 
+  export let columns = 2;
+
   $: breakdown = breakdownFees(fees);
 
   $: keyValues = {
@@ -28,9 +30,9 @@
       : [arr]
   }
 
-  $: groups = chunkArray(Object.entries(keyValues), 2);
+  $: groups = chunkArray(Object.entries(keyValues), columns);
 </script>
-<h3>Cuts Breakdown: $
+<h3 style="margin-top: 0">Cuts Breakdown: $
    <FormattedNumber animate={$enableAnimations} number={total} notation="standard"/>
 </h3>
 

@@ -1,96 +1,168 @@
 <script lang="ts">
   import type {Fees, TaxFeeBreakdown} from "../logic/types";
   import {breakdownFees, feesConstant} from "../logic/types";
+  import {enableAnimations} from "../logic/settings.ts";
+  import FormattedNumber from "../components/FormattedNumber.svelte";
+  import {Text} from "@svelteuidev/core";
 
   export let fees: Fees = feesConstant;
   export let asPercent = true;
 
   const breakdown: TaxFeeBreakdown = breakdownFees(fees);
 
-  const percentOrEmpty = asPercent ? '%' : '';
+  const withDecimals = asPercent ? false : true;
 
-  const sumDevFee = fees.devCut + percentOrEmpty;
-  const sumUsageFee = fees.usageFee + percentOrEmpty;
-  const sumWithdrawFee = fees.withdrawFee + percentOrEmpty;
-  const sumSellFee = fees.vfxSell + percentOrEmpty;
+  const prefix = asPercent ? '' : '$ ';
+  const suffix = asPercent ? ' %' : '';
+
+  const sumDevFee = fees.devCut;
+  const sumUsageFee = fees.usageFee;
+  const sumWithdrawFee = fees.withdrawFee;
+  const sumSellFee = fees.vfxSell;
 </script>
 
 <div>
    <table>
       <tr>
-         <td></td>
-         <td>Pulse <br/> Devs</td>
-         <td>VFX <br/> Worldwide</td>
-         <td>Buy <br/> Back</td>
-         <td>BUSD</td>
-         <td>LP</td>
-         <td>Marketing</td>
-         <td>UTV</td>
-
-         <td>Total <br/> of Type:</td>
+         <th>Pulse Devs</th>
+         <th>VFX Worldw.</th>
+         <th>Buy Back</th>
+         <th>BUSD</th>
+         <th>LP</th>
+         <th>Marketing</th>
+         <th>UTV</th>
+         <th>Total</th>
       </tr>
 
       <tr class="even">
-         <td>
+         <td class="row-label" colspan="8">
             Dev Fee
          </td>
-         <td>{breakdown.devFee}{percentOrEmpty}</td>
-         <td></td>
-         <td></td>
-         <td></td>
-         <td></td>
-         <td></td>
-         <td></td>
-         <td><b>= {sumDevFee}</b></td>
       </tr>
-
-      <tr class="odd">
-         <td>
-            Usage Fee
-         </td>
-         <td></td>
-         <td>{breakdown.usageFee.vfxWorldwide}{percentOrEmpty}</td>
-         <td></td>
-         <td></td>
-         <td></td>
-         <td></td>
-         <td>{breakdown.usageFee.utv}{percentOrEmpty}</td>
-         <td><b>= {sumUsageFee}</b></td>
-      </tr>
-
       <tr class="even">
          <td>
-            Withdraw <br/>to VFX
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.devFee}
+                             {withDecimals} {prefix} {suffix}/>
          </td>
          <td></td>
-         <td>{breakdown.withdrawVFX.vfxWorldwide}{percentOrEmpty}</td>
-         <td>{breakdown.withdrawVFX.buyBack}{percentOrEmpty}</td>
-         <td>{breakdown.withdrawVFX.busd}{percentOrEmpty}</td>
          <td></td>
          <td></td>
          <td></td>
-         <td><b>= {sumWithdrawFee}</b></td>
+         <td></td>
+         <td></td>
+         <td><b>=
+            <FormattedNumber animate={$enableAnimations}
+                             number={sumDevFee}
+                             {withDecimals} {prefix} {suffix}/>
+         </b></td>
       </tr>
-
+      <tr class="odd">
+         <td class="row-label" colspan="8">
+            Usage Fee
+         </td>
+      </tr>
+      <tr class="odd">
+         <td></td>
+         <td>
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.usageFee.vfxWorldwide}
+                             {withDecimals} {prefix} {suffix}/>
+         </td>
+         <td></td>
+         <td></td>
+         <td></td>
+         <td></td>
+         <td>
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.usageFee.utv}
+                             {withDecimals} {prefix} {suffix}/>
+         </td>
+         <td><b>=
+            <FormattedNumber animate={$enableAnimations}
+                             number={sumUsageFee}
+                             {withDecimals} {prefix} {suffix}/>
+         </b></td>
+      </tr>
+      <tr class="even">
+         <td class="row-label" colspan="8">
+            Withdraw to VFX
+         </td>
+      </tr>
+      <tr class="even">
+         <td></td>
+         <td>
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.withdrawVFX.vfxWorldwide}
+                             {withDecimals} {prefix} {suffix}/>
+         </td>
+         <td>
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.withdrawVFX.buyBack}
+                             {withDecimals} {prefix} {suffix}/>
+         </td>
+         <td>
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.withdrawVFX.busd}
+                             {withDecimals} {prefix} {suffix}/>
+         </td>
+         <td></td>
+         <td></td>
+         <td></td>
+         <td><b>=
+            <FormattedNumber animate={$enableAnimations}
+                             number={sumWithdrawFee}
+                             {withDecimals} {prefix} {suffix}/>
+         </b></td>
+      </tr>
 
       <tr class="odd">
-         <td>
-            Sell of VFX / <br/>
+         <td class="row-label" colspan="8">
             Convert to USDT
          </td>
+      </tr>
+      <tr class="odd">
          <td></td>
          <td></td>
-         <td>{breakdown.sellVFX.buyBack}{percentOrEmpty}</td>
-         <td>{breakdown.sellVFX.busd}{percentOrEmpty}</td>
-         <td>{breakdown.sellVFX.lp}{percentOrEmpty}%</td>
-         <td>{breakdown.sellVFX.marketing}{percentOrEmpty}</td>
+         <td>
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.sellVFX.buyBack}
+                             {withDecimals} {prefix} {suffix}/>
+         </td>
+         <td>
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.sellVFX.busd}
+                             {withDecimals} {prefix} {suffix}/>
+         </td>
+         <td>
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.sellVFX.lp}
+                             {withDecimals} {prefix} {suffix}/>
+         </td>
+         <td>
+            <FormattedNumber animate={$enableAnimations}
+                             number={breakdown.sellVFX.marketing}
+                             {withDecimals} {prefix} {suffix}/>
+         </td>
          <td></td>
-         <td><b>= {sumSellFee}</b></td>
+         <td><b>=
+            <FormattedNumber animate={$enableAnimations}
+                             number={sumSellFee}
+                             {withDecimals} {prefix} {suffix}/>
+         </b></td>
       </tr>
    </table>
-</div>
 
+   <br/>
+   <Text size="sm">This is using the upcoming V3 Tokenomics.</Text>
+</div>
 <style lang="scss">
+  td:not(.row-label) {
+    white-space: nowrap;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
   tr.even {
     background: #AAAAAA60
   }

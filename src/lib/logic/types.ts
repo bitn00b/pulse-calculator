@@ -90,6 +90,9 @@ export type InterestForIterationSettings = {
 export type CalculatorModes = 'calc' | 'wen' | 'whale';
 
 export type Fees = FeesAndCuts<FeesAndCutsType>;
+export type FeesTotal = Fees & {
+  total: number
+};
 
 export const feesConstant: Fees = {
   devCut: 15,
@@ -122,8 +125,15 @@ export interface TaxFeeBreakdown {
   }
 }
 
+export function totalOfFees(fees: Fees): FeesTotal {
+  return {
+    ...fees,
+    total: fees.usageFee + fees.withdrawFee + fees.devCut + fees.vfxSell
+  }
+}
+
 export function summarizeFeesOfIterations(iterations: IterationResult[]) {
-  const feesResult: Fees & { total: number } = {
+  const feesResult: FeesTotal = {
     devCut: 0,
     withdrawFee: 0,
     vfxSell: 0,

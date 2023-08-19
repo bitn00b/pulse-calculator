@@ -1,9 +1,9 @@
 <script lang="ts">
   import {ActionIcon, Alert, Code, CopyIcon, Modal} from "@svelteuidev/core";
-  import {showTippingModal} from "./logic/store";
-  import {modalSize} from "./logic/computed";
+  import {showTippingModal} from "../logic/store";
+  import {modalSize} from "../logic/computed";
   import {copyText} from 'svelte-copy';
-  import wallet from "../assets/wallet.png";
+  import wallet from "../../assets/wallet.png";
 
   const tipWallet = '0x0eB4B25D17c72D435ca430c233E9f64Ac409efe4';
 
@@ -49,7 +49,7 @@
    <br/>
 
    <Alert title="This wallet is an EVM wallet and compatible to the following chains:">
-      <Code>ETH</Code>, <Code>BSC</Code>, <Code>Polygon</Code>, <Code>Arbitrum</Code>
+      <Code>ETH</Code>, <Code>BSC</Code>, <Code>Polygon</Code>
    </Alert>
 
    <br/>

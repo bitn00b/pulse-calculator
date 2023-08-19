@@ -1,14 +1,18 @@
 <script lang="ts">
-  import {percentADay, stateTax, totalCuts, withdrawPercentInVFX} from "../logic/store";
+  import {percentADay, showTaxBreakdownModal, stateTax, withdrawPercentInVFX} from "../logic/store";
   import {enableAnimations} from "../logic/settings";
-  import {Divider, Text} from "@svelteuidev/core";
+  import {ActionIcon, Divider, Text} from "@svelteuidev/core";
   import PrincipalAndProfit from "./PrincipalAndProfit.svelte";
   import FormattedNumber from "../components/FormattedNumber.svelte";
   import Profit from "./Profit.svelte";
   import type {IterationResult} from "../logic/types";
+  import {totalOfFees} from "../logic/types";
+  import {InfoCircled} from "radix-icons-svelte";
 
   export let iteration: IterationResult;
 
+  $: fees = iteration.amounts;
+  $: total = totalOfFees(fees);
 </script>
 
 <div class="details">
@@ -195,11 +199,16 @@
          </td>
       </tr>
       <tr>
-         <td>Fees Total:</td>
+         <td>Pulse/VFX Cuts:</td>
          <td class="negative-numbers"><b>$
             <FormattedNumber
-               number={$totalCuts}/>
-         </b></td>
+               number={total.total}/>
+         </b>
+            <ActionIcon variant="default" style="display: inline-block"
+                        on:click={() => $showTaxBreakdownModal = fees} size={30}>
+               <InfoCircled/>
+            </ActionIcon>
+         </td>
       </tr>
    </table>
 
