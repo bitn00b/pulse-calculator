@@ -1,6 +1,5 @@
-import type {Writable} from "svelte/store";
-import {get_store_value} from "svelte/internal";
+import {get, type Writable} from "svelte/store";
 
 export function push<TInner>(writable: Writable<TInner[]>, ...itemsToAdd: TInner[]) {
-  writable.set([...get_store_value(writable), ...itemsToAdd]);
+  writable.set([...get(writable), ...itemsToAdd]);
 }

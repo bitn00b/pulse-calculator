@@ -5,16 +5,16 @@ import type {
   IterationResult,
   IterationWithdrawAsVFX
 } from "./types.ts";
+import {feesConstant} from "./types.ts";
 import {nanoid} from "nanoid"; // todo maybe replace it by custom code
 // @ts-ignore
-import {averageOfNumbers} from "./utils.ts";
+import {averageOfNumbers, sumPropertyOfArray} from "./utils.ts";
 import {getDaysMeta} from "./constants.ts";
 
-const VFX_SELL_TAX = 0.09;
-const PULSE_WITHDRAW_FEE = 0.05;
-
-// the value is calculated alone so no 0.995 thing
-const REFERRER_CUT = 0.05;
+const VFX_SELL_TAX = feesConstant.vfxSell / 100;
+const PULSE_WITHDRAW_FEE = feesConstant.withdrawFee / 100;
+const DEV_CUT = feesConstant.devCut / 100;
+const USAGE_FEE = feesConstant.usageFee / 100;
 
 
 function setAdditionalDepositsDefaults(additionalDeposits: AdditionalDepositsSettings) {
@@ -150,12 +150,17 @@ export function interestForIterations(
         profitOfThisDay = (percentADay - 1) * currentValue;
       }
 
-      // console.info('profit of this day', profitOfThisDay);
+      const amountBeforeFeeTax = profitOfThisDay;
 
-      const referrerCut = profitOfThisDay * REFERRER_CUT;
-      // console.info('referrercut', referrerCut);
+      // First Dev Cut
+      const devCut = profitOfThisDay * DEV_CUT;
+      const after_devCut = profitOfThisDay - devCut;
 
-      profitOfThisDay -= referrerCut;
+      // Then Usage Fee
+      const usageFee = after_devCut * USAGE_FEE;
+      const after_usageFee = after_devCut - usageFee;
+
+      profitOfThisDay = after_usageFee;
 
       // console.info('profit after referrercut', profitOfThisDay);
 
@@ -176,7 +181,12 @@ export function interestForIterations(
         currentValue,
         canCompound,
         profitOfThisDay,
-        referrerCut,
+
+        usageFee,
+        devCut,
+        after_devCut,
+        after_usageFee,
+
         profitUntilNow,
         percentADay
       };
@@ -195,49 +205,54 @@ export function interestForIterations(
     if (withdrawSettings?.withdrawPercentInVFX) {
       const amountToWithdrawAsVFX = amountBeforeFeeTax * withdrawSettings.withdrawPercentInVFX / 100;
       const withdrawFee = amountToWithdrawAsVFX * PULSE_WITHDRAW_FEE;
-      const amountAfterFee = amountToWithdrawAsVFX - withdrawFee;
+      const after_withdrawFee = amountToWithdrawAsVFX - withdrawFee;
 
       amountBeforeFeeTax -= amountToWithdrawAsVFX;
 
       withdrawInVFX = {
-        amountBefore: amountAfterAllDays,
+        amountBeforeFeeTax: amountAfterAllDays,
         withdrawFee,
-        amountAfterFee,
+        after_withdrawFee: after_withdrawFee,
+        amountAfterTaxes: after_withdrawFee,
         remainingAmount: amountBeforeFeeTax
       };
     }
 
     const withdrawFee = amountBeforeFeeTax * PULSE_WITHDRAW_FEE;
-
     const amountAfterWithdrawFee = amountBeforeFeeTax - withdrawFee;
 
     const sellTax = amountAfterWithdrawFee * VFX_SELL_TAX; // TODO create tests xD
     const amountAfterFees = amountAfterWithdrawFee - sellTax;
 
+    const sumOfDevCut = sumPropertyOfArray(interests, el => el.devCut);
+    const sumOfUsageFee = sumPropertyOfArray(interests, el => el.usageFee);
 
-    const referrerCutOfIteration = interests.reduce((prev, cur) => {
-      return prev + cur.referrerCut;
-    }, 0);
-    // console.warn({iteration, lastDay, amountAfterFees});
     // console.table(interests);
 
-    const profit = (amountAfterFees + (withdrawInVFX?.amountAfterFee ?? 0)) - startOfIteration;
+    const profit = (amountAfterFees + (withdrawInVFX?.amountAfterTaxes ?? 0)) - startOfIteration;
 
     const averagePercent = averageOfNumbers(interests.map(i => i.percentADay)) * 100 - 100;
 
     result.push({
       uuid: nanoid(),
-      amountBeforeFeeTax,
+
+      amounts: {
+        amountBeforeFeeTax,
+        devCut: sumOfDevCut,
+        usageFee: sumOfUsageFee,
+        withdrawFee,
+        after_withdrawFee: amountAfterWithdrawFee,
+        vfxSell: sellTax,
+        after_vfxSell: amountAfterFees,
+        amountAfterTaxes: amountAfterFees
+      },
+
       withdrawInVFX,
       iteration,
       interests,
-      amountAfterFees,
       amountAfterAllDays,
-      withdrawFee,
-      sellTax,
       days: daysToCalculate,
       principal: startOfIteration,
-      referrerCutOfIteration,
       averagePercent,
       profit,
     });

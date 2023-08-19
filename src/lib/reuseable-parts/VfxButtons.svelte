@@ -5,6 +5,7 @@
   import BiLogoTelegram from "svelte-icons-pack/bi/BiLogoTelegram";
   import Icon from 'svelte-icons-pack/Icon.svelte';
 
+  const telegramLink = 'https://t.me/VFX_Worldwide';
 
   const buttonStyle = {
     'padding': '0 0.5rem',
@@ -22,7 +23,7 @@
    </ActionIcon>
 
    <ActionIcon variant='outline' title="Vault Telegram" root="a" target="_blank"
-               href="https://t.me/TheVaultFinance" color="blue"
+               href={telegramLink} color="blue"
                style="display: inline-flex" size="lg">
       <Icon color="var(--svelteui-colors-blue300)" size={24} src={BiLogoTelegram}/>
    </ActionIcon>
@@ -32,16 +33,16 @@
            style="display: inline-block" override={buttonStyle}>
       <div class="inner-button-centered">
          <Icon color="white" size={24} src={BiGlobe}/>
-         Vault Homepage
+         VFX Worldwide Homepage
       </div>
    </Button>
 
    <Button target="_blank" override={buttonStyle}
-           href="https://t.me/TheVaultFinance" variant="outline"
+           href={telegramLink} variant="outline"
            style="display: inline-block">
       <div class="inner-button-centered">
          <Icon color="var(--svelteui-colors-blue300)" size={24} src={BiLogoTelegram}/>
-         Vault Telegram
+         VFX Worldwide Telegram
       </div>
    </Button>
 

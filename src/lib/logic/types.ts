@@ -4,38 +4,39 @@ export interface PrincipalAndProfits {
   profit: number;
 }
 
+export type InterestEntryAmounts = FeesAndCuts<'devCut' | 'usageFee'> & FeeAndCutsAfter<'devCut' | 'usageFee'>;
 
-export type InterestEntry = {
+export type InterestEntry = InterestEntryAmounts & {
   day: number;
   daySinceBegin: number;
   startedWith: number;
   currentValue: number;
   canCompound: boolean;
   profitOfThisDay: number;
-  referrerCut: number;
   profitUntilNow: number;
   percentADay: number;
 }
 
-export interface IterationWithdrawAsVFX {
-  amountBefore: number;
-  withdrawFee: number;
-  amountAfterFee: number;
-  remainingAmount: number;
-}
 
 export type FeesAndCutsType = 'devCut' | 'usageFee' | 'withdrawFee' | 'vfxSell';
 
-export type FeesAndCuts = {
-  [typeFee in FeesAndCutsType]: number;
+export type FeesAndCuts<TFees extends FeesAndCutsType> = {
+  [typeFee in TFees]: number;
 }
 
-export type EntryFeesAndCuts = FeesAndCuts & {
-  [typeFee in `after_${FeesAndCutsType}`]: number;
-} & {
+export type FeeAndCutsAfter<TFees extends FeesAndCutsType> = {
+  [typeFee in `after_${TFees}`]: number;
+}
+
+export type BeforeAndAfterCuts = {
   amountBeforeFeeTax: number;
   amountAfterTaxes: number;
-};
+}
+
+
+export interface IterationWithdrawAsVFX extends FeesAndCuts<'withdrawFee'>, FeeAndCutsAfter<'withdrawFee'>, BeforeAndAfterCuts {
+  remainingAmount: number;
+}
 
 // Fees
 // 15% Dev Fee
@@ -52,11 +53,7 @@ export interface IterationResult extends PrincipalAndProfits {
 
   withdrawInVFX?: IterationWithdrawAsVFX;
 
-  amountAfterFees: number;
-  referrerCutOfIteration: number;
-  amountBeforeFeeTax: number;
-  withdrawFee: number;
-  sellTax: number;
+  amounts: FeesAndCuts<FeesAndCutsType> & FeeAndCutsAfter<'vfxSell' | 'withdrawFee'> & BeforeAndAfterCuts;
 
   uuid: string;
   averagePercent: number;
@@ -92,18 +89,13 @@ export type InterestForIterationSettings = {
 
 export type CalculatorModes = 'calc' | 'wen' | 'whale';
 
-export interface Fees {
-  devFee: number;
-  usageFee: number;
-  withdrawFee: number;
-  sellVFX: number;
-}
+export type Fees = FeesAndCuts<FeesAndCutsType>;
 
 export const feesConstant: Fees = {
-  devFee: 15,
+  devCut: 15,
   usageFee: 3,
   withdrawFee: 5,
-  sellVFX: 7
+  vfxSell: 7
 }
 
 export interface TaxFeeBreakdown {
@@ -122,32 +114,72 @@ export interface TaxFeeBreakdown {
     busd: number;
     lp: number;
     marketing: number;
+  },
+  summary: {
+    vfxWorldwide: number;
+    buyBack: number;
+    busd: number;
   }
 }
 
+export function summarizeFeesOfIterations(iterations: IterationResult[]) {
+  const feesResult: Fees & { total: number } = {
+    devCut: 0,
+    withdrawFee: 0,
+    vfxSell: 0,
+    usageFee: 0,
+    total: 0
+  };
+
+  for (const iteration of iterations) {
+    if (iteration.withdrawInVFX) {
+      feesResult.withdrawFee += iteration.withdrawInVFX.withdrawFee;
+    }
+
+    feesResult.devCut += iteration.amounts.devCut;
+    feesResult.withdrawFee += iteration.amounts.withdrawFee;
+    feesResult.vfxSell += iteration.amounts.vfxSell;
+    feesResult.usageFee += iteration.amounts.usageFee;
+  }
+
+  feesResult.total = feesResult.devCut + feesResult.withdrawFee + feesResult.vfxSell + feesResult.usageFee;
+
+  return feesResult;
+}
 
 export function breakdownFees(fees: Fees): TaxFeeBreakdown {
 
   const usageFeeDivided = fees.usageFee / feesConstant.usageFee;
   const withdrawVFXDivided = fees.withdrawFee / feesConstant.withdrawFee;
-  const sellVFXDivided = fees.sellVFX / feesConstant.sellVFX;
+  const sellVFXDivided = fees.vfxSell / feesConstant.vfxSell;
+
+  const usageFee = {
+    vfxWorldwide: usageFeeDivided * 2,
+    utv: usageFeeDivided,
+  };
+
+  const withdrawVFX = {
+    vfxWorldwide: withdrawVFXDivided * 3,
+    buyBack: withdrawVFXDivided,
+    busd: withdrawVFXDivided,
+  };
+
+  const sellVFX = {
+    buyBack: sellVFXDivided,
+    busd: sellVFXDivided * 4,
+    lp: sellVFXDivided,
+    marketing: sellVFXDivided,
+  }
 
   return {
-    devFee: fees.devFee,
-    usageFee: {
-      vfxWorldwide: usageFeeDivided * 2,
-      utv: usageFeeDivided,
-    },
-    withdrawVFX: {
-      vfxWorldwide: withdrawVFXDivided * 3,
-      buyBack: withdrawVFXDivided,
-      busd: withdrawVFXDivided,
-    },
-    sellVFX: {
-      buyBack: sellVFXDivided,
-      busd: sellVFXDivided * 4,
-      lp: sellVFXDivided,
-      marketing: sellVFXDivided,
+    devFee: fees.devCut,
+    usageFee,
+    withdrawVFX,
+    sellVFX,
+    summary: {
+      vfxWorldwide: usageFee.vfxWorldwide + withdrawVFX.vfxWorldwide,
+      buyBack: withdrawVFX.buyBack + sellVFX.buyBack,
+      busd: withdrawVFX.busd + sellVFX.busd
     }
   }
 

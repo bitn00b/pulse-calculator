@@ -14,8 +14,7 @@
     IterationResult,
     WithdrawSettings
   } from "../../logic/types";
-  import {get_store_value} from "svelte/internal";
-  import {writable} from "svelte/store";
+  import {get, writable} from "svelte/store";
   import {formatNumberUSD} from "../../logic/utils.ts";
   import {Grid} from "../../components/Grid";
   import {increaseWhaleModeCounter, saveCurrentUsageTime} from "../../logic/tracking-state.ts";
@@ -63,7 +62,7 @@
   }
 
   function multiplyResultsByContracts(iterations: IterationResult[]) {
-    const multiplicator = get_store_value(whaleModeContractsAmountSelected);
+    const multiplicator = get(whaleModeContractsAmountSelected);
 
     const profitTotal = calculateTotalProfit(iterations);
 

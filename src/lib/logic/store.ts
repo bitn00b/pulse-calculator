@@ -1,7 +1,6 @@
-import {derived, writable} from "svelte/store";
+import type {Readable} from "svelte/store";
+import {derived, get, writable} from "svelte/store";
 import {debounce} from 'svelte-reactive-debounce'
-import type {Readable} from "svelte/types/runtime/store";
-import {get_store_value} from "svelte/internal";
 import {averageOfNumbers, sumPropertyOfArray} from "./utils";
 import type {
   AdditionalDepositsSettings,
@@ -11,6 +10,7 @@ import type {
   MiscSettings,
   WithdrawSettings
 } from "./types";
+import {summarizeFeesOfIterations} from "./types";
 import {increaseCalculationCounter, increaseRandomInterestCounter} from "./tracking-state";
 import {minDatePickerDate} from "./computed.ts";
 import {localStoredSetting} from "./setting-functions";
@@ -109,26 +109,6 @@ function delayMsAsync(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function delayedIterationReadableStore<TSource, TIterationResult>(
-  source: Readable<TSource>,
-  getIterable: (source: TSource) => Iterable<TIterationResult>,
-  emptyValue: TIterationResult
-): Readable<TIterationResult> {
-  const writableStore = writable(emptyValue);
-
-  // sadly no unsubscribe, but it should be fine...^^
-  source.subscribe(async values => {
-    for (let results of getIterable(values)) {
-      writableStore.set(results);
-
-      // slow phone rendering/calculation improvements
-      await delayMsAsync(250);
-    }
-  })
-
-  return writableStore;
-}
-
 // dev mode doesn't work in firefox, some "import * from" not supported I guess?
 // and vite not compiling it to es during dev-mode - couldnt find any config for it yet
 export const worker = new Worker(
@@ -139,7 +119,7 @@ export const worker = new Worker(
 const retriggerForRandom = writable(0);
 
 export function retriggerCalc() {
-  retriggerForRandom.set(get_store_value(retriggerForRandom) + 1);
+  retriggerForRandom.set(get(retriggerForRandom) + 1);
   increaseRandomInterestCounter();
 }
 
@@ -186,19 +166,16 @@ export const totalProfit = derived(interestPerIteration, values =>
 
 export const totalUSDT = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.profit));
 
-export const totalVFXReceived = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.withdrawInVFX?.amountAfterFee ?? 0));
+export const totalVFXReceived = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.withdrawInVFX?.amountAfterTaxes ?? 0));
 
 export const totalDays = derived(interestPerIteration, values => values.reduce((prev, cur) => {
   return prev + cur.days;
 }, 0));
 
-export const totalReferrerCut = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
-  return prev + cur.referrerCutOfIteration;
-}, 0));
+export const summarizedCuts = derived(interestPerIteration, iterations => summarizeFeesOfIterations(iterations))
 
-export const totalCuts = derived(interestPerIteration, iterations => iterations.reduce((prev, cur) => {
-  return prev + cur.referrerCutOfIteration + cur.sellTax + cur.withdrawFee + (cur.withdrawInVFX?.withdrawFee ?? 0);
-}, 0));
+export const totalCuts = derived(summarizedCuts, fees => fees.total
+);
 
 export const totalAveragePercent = derived(interestPerIteration, iterations => averageOfNumbers(iterations.map(i => i.averagePercent)));
 

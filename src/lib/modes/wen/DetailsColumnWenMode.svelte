@@ -21,8 +21,7 @@
     WithdrawSettings
   } from "../../logic/types";
   import {findIterationWhenProfitIsAbove} from "../../logic/store-functions.ts";
-  import {get_store_value} from "svelte/internal";
-  import {writable} from "svelte/store";
+  import {get, writable} from "svelte/store";
   import {Grid} from "../../components/Grid";
   import Profit from "../../reuseable-parts/Profit.svelte";
   import {InfoCircled} from "radix-icons-svelte";
@@ -37,6 +36,7 @@
     {
       percentADay: number,
       iteration: number,
+      days: number;
       profitAtTheEnd: number,
       error?: string
     }
@@ -68,7 +68,8 @@
       push(foundForPercent, {
         iteration: foundIteration.iteration,
         profitAtTheEnd: foundIteration.profitAtTheEndOfIteration,
-        percentADay: currentSettingTrigger.percentADay
+        percentADay: currentSettingTrigger.percentADay,
+        days: foundIteration.days,
       });
 
       triggerNextPercentADay();
@@ -128,17 +129,17 @@
     }
 
     const additionalDeposits: AdditionalDepositsSettings = {
-      additionalAmount: get_store_value(additionalAmount),
-      additionalAmountInterval: get_store_value(additionalInterval) as AdditionalAmountInterval,
-      additionalLimit: get_store_value(additionalLimit),
-      additionalVolumeBusdAmount: get_store_value(additionalVolumeBusdAmount)
+      additionalAmount: get(additionalAmount),
+      additionalAmountInterval: get(additionalInterval) as AdditionalAmountInterval,
+      additionalLimit: get(additionalLimit),
+      additionalVolumeBusdAmount: get(additionalVolumeBusdAmount)
     };
 
     currentSettingTrigger = {
       iterationCount: 12,
       percentADay: 100.5,
       firstIterationDays: Number($firstIterationDays),
-      initial: get_store_value(principalInputDelayed),
+      initial: get(principalInputDelayed),
       iterationDays: Number($iterationDays),
       miscSettings: {
         stateTax: 0
@@ -198,6 +199,7 @@
 
             {:else }
                it takes {resultEntry.iteration} Iterations <br/>
+               {resultEntry.days} Days - {Math.round(resultEntry.days / 365)} Years <br/>
                Profit at the end:
                <Profit profit={resultEntry.profitAtTheEnd}></Profit>
             {/if}

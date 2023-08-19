@@ -11,7 +11,6 @@
     totalCuts,
     totalDays,
     totalProfit,
-    totalReferrerCut,
     totalUSDT,
     totalVFXReceived,
     withdrawPercentInVFX
@@ -20,7 +19,7 @@
   import type {IterationResult, PrincipalAndProfits} from "../../logic/types.ts";
   import {derived} from "svelte/store";
   import {sumPropertyOfArray} from "../../logic/utils.ts";
-  import TaxFeeBreakdown from "../../reuseable-parts/TaxFeeBreakdown.svelte";
+  import TaxFeeBreakdown from "../../reuseable-parts/TaxFeeBreakdownKeyValue.svelte";
 
   export let iteration: IterationResult;
 
@@ -41,18 +40,6 @@
 
    <br/>
    <table style="width: 100%">
-      <tr>
-         <td>Referrer Received:</td>
-         <td><b>$
-            <FormattedNumber animate={$enableAnimations} number={$totalReferrerCut} notation="standard"/>
-         </b>
-         </td>
-      </tr>
-      <tr>
-         <td colspan="2">
-            <Text size='sm' align='right'>(5% of daily Profit)</Text>
-         </td>
-      </tr>
       <tr>
          <td>Average Interest</td>
          <td><b>

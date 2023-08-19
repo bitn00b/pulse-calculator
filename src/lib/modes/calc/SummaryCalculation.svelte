@@ -7,11 +7,11 @@
     interestPerIteration,
     principalInputDelayed,
     stateTax,
+    summarizedCuts,
     totalAveragePercent,
     totalCuts,
     totalDays,
     totalProfit,
-    totalReferrerCut,
     totalUSDT,
     totalVFXReceived,
     withdrawPercentInVFX
@@ -20,7 +20,7 @@
   import type {PrincipalAndProfits} from "../../logic/types.ts";
   import {derived} from "svelte/store";
   import {sumPropertyOfArray} from "../../logic/utils.ts";
-  import TaxFeeBreakdown from "../../reuseable-parts/TaxFeeBreakdown.svelte";
+  import TaxFeeBreakdown from "../../reuseable-parts/TaxFeeBreakdownKeyValue.svelte";
 
   $: principalAndProfit = {
     principal: $principalInputDelayed,
@@ -38,28 +38,10 @@
    <br/>
    <table style="width: 100%">
       <tr>
-         <td>Referrer Received:</td>
-         <td><b>$
-            <FormattedNumber animate={$enableAnimations} number={$totalReferrerCut} notation="standard"/>
-         </b>
-         </td>
-      </tr>
-      <tr>
-         <td colspan="2">
-            <Text size='sm' align='right'>(5% of daily Profit)</Text>
-         </td>
-      </tr>
-      <tr>
          <td>Average Interest</td>
          <td><b>
             <FormattedNumber animate={$enableAnimations} number={$totalAveragePercent} notation="standard"/>
             %
-         </b></td>
-      </tr>
-      <tr>
-         <td>Pulse/VFX Cuts</td>
-         <td><b>$
-            <FormattedNumber animate={$enableAnimations} number={$totalCuts} notation="standard"/>
          </b></td>
       </tr>
       {#if $withdrawPercentInVFX > 0}
@@ -95,10 +77,21 @@
             </td>
          </tr>
       {/if}
+      <tr>
+         <td colspan="2">
+            <br/>
+         </td>
+      </tr>
+      <tr>
+         <td>Pulse/VFX Cuts</td>
+         <td><b>$
+            <FormattedNumber animate={$enableAnimations} number={$totalCuts} notation="standard"/>
+         </b></td>
+      </tr>
    </table>
 
    <br/>
-   <TaxFeeBreakdown iterations={$interestPerIteration}/>
+   <TaxFeeBreakdown fees={$summarizedCuts} total={$totalCuts}/>
 
    <br/>
    More stats will be added Soon<sup>TM</sup> :) <br/>

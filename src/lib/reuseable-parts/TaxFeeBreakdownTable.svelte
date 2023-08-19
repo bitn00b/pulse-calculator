@@ -9,10 +9,10 @@
 
   const percentOrEmpty = asPercent ? '%' : '';
 
-  const sumDevFee = fees.devFee + percentOrEmpty;
+  const sumDevFee = fees.devCut + percentOrEmpty;
   const sumUsageFee = fees.usageFee + percentOrEmpty;
   const sumWithdrawFee = fees.withdrawFee + percentOrEmpty;
-  const sumSellFee = fees.sellVFX + percentOrEmpty;
+  const sumSellFee = fees.vfxSell + percentOrEmpty;
 </script>
 
 <div>
