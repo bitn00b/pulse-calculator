@@ -10,21 +10,27 @@
 </script>
 
 <Grid>
+   <GridCol sm={4} xs={6}>
+      <div class="top-label-tile">
+         End Amount: <br/>
 
+         <Profit profit={$principalInputDelayed+$totalProfit}></Profit>
+
+         {#if $isSmallDevice}
+            <br/>
+         {/if}
+         <span>+<FormattedNumber
+            animate={$enableAnimations}
+            notation="standard"
+            number={(100 / $principalInputDelayed) * $totalProfit}
+         /> %</span>
+      </div>
+   </GridCol>
    <GridCol sm={4} xs={6}>
       <div class="top-label-tile">
          Total Profit: <br/>
 
          <Profit profit={$totalProfit}></Profit>
-
-         {#if $isSmallDevice}
-            <br/>
-         {/if}
-         <span>(<FormattedNumber
-            animate={$enableAnimations}
-            notation="standard"
-            number={(100 / $principalInputDelayed) * $totalProfit}
-         /> %)</span>
       </div>
    </GridCol>
 </Grid>

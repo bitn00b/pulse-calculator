@@ -49,7 +49,6 @@ export interface IterationWithdrawAsVFX extends FeesAndCuts<'withdrawFee'>, FeeA
 export interface IterationResult extends PrincipalAndProfits {
   iteration: number;
   interests: InterestEntry[];
-  amountAfterAllDays: number;
 
   withdrawInVFX?: IterationWithdrawAsVFX;
 

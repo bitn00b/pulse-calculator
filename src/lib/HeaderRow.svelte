@@ -31,7 +31,7 @@
   /** Countdown Functions */
 
   function getDate(day) {
-    return new Date(2023, 2 /*yeah ... month is starting from 0...*/, day, 23, 59, 59);
+    return new Date(2023, 8 /*yeah ... month is starting from 0...*/, day, 23, 59, 59);
   }
 
   const fullDayOfMinutes = 60 * 24;
@@ -52,14 +52,10 @@
     })
   }
 
-  const pulsePrivatePresaleStart = getDate(0);
-  const pulsePublicPresaleStart = getDate(4);
-  const pulsePublicStart = getDate(8);
+  const pulsePublicStart = getDate(22);
 
   // const headerLabel = der
 
-  const untilPrivatePresaleStart = getDerivedMinutesInterval(pulsePrivatePresaleStart);
-  const untilPublicPresaleStart = getDerivedMinutesInterval(pulsePublicPresaleStart);
   const untilPublicStart = getDerivedMinutesInterval(pulsePublicStart);
 
   let showCountdownDialog = false;
@@ -108,8 +104,8 @@
 
             </GridCol>
 
-            <GridCol lg={6} xs={6} style="padding: 8px;display: none">
-               <div class="grid-cell-2" style="display: none">
+            <GridCol lg={6} xs={6} style="padding: 8px;">
+               <div class="grid-cell-2">
                   {#if !$untilPublicStart.inThePast}
                      {#if $untilPublicStart.today}
                         🚀 T-O-D-A-Y 🚀
@@ -141,38 +137,6 @@
 <Modal opened={showCountdownDialog} on:close={() => showCountdownDialog = false}
        title="ITS THE FINAL COUNTDOWN" size={size}>
 
-   {#if !$untilPrivatePresaleStart.inThePast}
-      <h3>Start for Private Presalers:</h3>
-
-      {#if $untilPrivatePresaleStart.today}
-         TODAY!!!!
-      {:else}
-         {pulsePrivatePresaleStart.toLocaleDateString()} <br/>
-
-         Countdown:
-         <AnimatedFlipboardText>
-            {$untilPrivatePresaleStart.formattedNumber}
-         </AnimatedFlipboardText>
-      {/if}
-      <br/>
-      <br/>
-   {/if}
-
-   {#if !$untilPublicPresaleStart.inThePast}
-      <h3>Start for Public Presalers:</h3>
-      {#if $untilPublicPresaleStart.today}
-         TODAY!!!!
-      {:else}
-         {pulsePublicPresaleStart.toLocaleDateString()} <br/>
-
-         Countdown:
-         <AnimatedFlipboardText>
-            {$untilPublicPresaleStart.formattedNumber}
-         </AnimatedFlipboardText>
-      {/if}
-      <br/>
-      <br/>
-   {/if}
 
    {#if !$untilPublicStart.inThePast}
       <h3>PUBLIC START:</h3>

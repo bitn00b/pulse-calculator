@@ -41,7 +41,7 @@
       <tr>
          <td>Amount after {iteration.days} Days:</td>
          <td>$
-            <FormattedNumber number={iteration.amountAfterAllDays}/>
+            <FormattedNumber number={iteration.amounts.amountBeforeFeeTax}/>
          </td>
       </tr>
    </table>

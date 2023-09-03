@@ -250,7 +250,6 @@ export function interestForIterations(
       withdrawInVFX,
       iteration,
       interests,
-      amountAfterAllDays,
       days: daysToCalculate,
       principal: startOfIteration,
       averagePercent,

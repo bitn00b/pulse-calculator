@@ -72,7 +72,6 @@
 
     return {
       ...iteration,
-      amountAfterAllDays: iteration.amountAfterAllDays * multiplicator,
       profit: profitTotal * multiplicator,
       principal: iteration.principal * multiplicator,
       amountAfterFees: iteration.amountAfterFees * multiplicator,

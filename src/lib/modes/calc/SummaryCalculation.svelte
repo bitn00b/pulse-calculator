@@ -32,10 +32,11 @@
 
   $: totalStateTax = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.profit * $stateTax / 100));
 
+  $: amountAtTheEnd = $interestPerIteration.at(-1)?.amounts.amountAfterTaxes;
 </script>
 
 <Paper>
-   <PrincipalAndProfit principalAndProfit={principalAndProfit}/>
+   <PrincipalAndProfit principalAndProfit={principalAndProfit} showAmountAtTheEnd={amountAtTheEnd}/>
 
    <br/>
    <table style="width: 100%">
