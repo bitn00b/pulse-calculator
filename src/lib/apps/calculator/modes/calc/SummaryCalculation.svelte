@@ -2,7 +2,7 @@
 
   import {ActionIcon, Paper, Text} from "@svelteuidev/core";
   import FormattedNumber from "../../../../components/FormattedNumber.svelte";
-  import {enableAnimations} from "@pulse/shared/settings.js";
+  import {enableAnimations} from "@pulse/shared/settings";
   import {
     interestPerIteration,
     principalInputDelayed,
@@ -16,11 +16,11 @@
     totalUSDT,
     totalVFXReceived,
     withdrawPercentInVFX
-  } from "../../logic/store.js";
+  } from "../../logic/store";
   import PrincipalAndProfit from "@pulse/reusable-parts/PrincipalAndProfit.svelte";
-  import type {PrincipalAndProfits} from "../../logic/types.ts";
+  import type {PrincipalAndProfits} from "../../logic/types";
   import {derived} from "svelte/store";
-  import {sumPropertyOfArray} from "@pulse/shared/utils.ts";
+  import {sumPropertyOfArray} from "@pulse/shared/utils";
   import TaxFeeBreakdown from "@pulse/reusable-parts/TaxFeeBreakdownKeyValue.svelte";
   import {InfoCircled} from "radix-icons-svelte";
 

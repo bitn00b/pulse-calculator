@@ -1,7 +1,7 @@
 <script>
-  import {principalInputDelayed, totalProfit} from "../../logic/store.js";
-  import {isSmallDevice} from "@pulse/shared/computed.js";
-  import {enableAnimations} from "@pulse/shared/settings.js";
+  import {principalInputDelayed, totalProfit} from "../../logic/store";
+  import {isSmallDevice} from "@pulse/shared/computed";
+  import {enableAnimations} from "@pulse/shared/settings";
   import Profit from "@pulse/reusable-parts/Profit.svelte";
   import {Grid, GridCol} from "@pulse/components/Grid/index";
   import FormattedNumber from "@pulse/components/FormattedNumber.svelte";

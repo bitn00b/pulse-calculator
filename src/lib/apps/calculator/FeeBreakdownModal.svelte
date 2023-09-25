@@ -34,18 +34,6 @@
 </Modal>
 
 <style lang="scss">
-  .input-group {
-    display: flex;
-    gap: 0.5rem;
-    background: #535353;
-  }
-
-  .centered-qr {
-    display: block;
-    width: 256px;
-    margin: 0 auto;
-  }
-
   .overflow {
     overflow-x: auto;
     overflow-y: clip;
