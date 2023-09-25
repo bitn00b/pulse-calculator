@@ -2,7 +2,6 @@
   import {type Component, Paper, Space, Stack, Text} from "@svelteuidev/core";
   import {currentMode} from "./logic/store.ts";
   import HeaderRow from "./HeaderRow.svelte";
-  import {isSmallDevice} from "@pulse/shared/computed.ts";
   import DetailColumn from "./modes/calc/DetailColumn.svelte";
   import TrackUsageTime from "./TrackUsageTime.svelte";
   import {Grid, GridCol} from "@pulse/components/Grid";
@@ -37,14 +36,6 @@
 </script>
 
 <HeaderRow/>
-
-<br/>
-<br/>
-
-{#if $isSmallDevice}
-   <br/>
-   <br/>
-{/if}
 
 <Stack>
    <Grid>

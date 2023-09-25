@@ -4,9 +4,12 @@
   import HeaderPageMenu from "../../reusable-parts/HeaderPageMenu.svelte";
   import NextProfitCountdown from "../../reusable-parts/NextProfitCountdown.svelte";
   import {Grid, GridCol} from "@pulse/components/Grid";
+
+  let fixedHeaderElement: HTMLElement;
+
 </script>
 
-<div class="fixed-header">
+<div class="fixed-header" bind:this={fixedHeaderElement}>
    <Center mt={3} mb={3}>
       <HeaderPageMenu/>
    </Center>
@@ -35,6 +38,8 @@
 
    </div>
 </div>
+
+<div style:height="{fixedHeaderElement?.clientHeight+8}px" style="display: block; width: 100%"></div>
 
 <style lang="scss">
   .fixed-header {

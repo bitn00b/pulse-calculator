@@ -11,7 +11,6 @@
   import {SimpleTable} from "@a-luna/svelte-simple-tables";
   import {columnSettings, tableSettings} from "./pulse-table-settings";
   import HeaderRow from "./HeaderRow.svelte";
-  import {isSmallDevice} from "@pulse/shared/computed";
 
   const mapData = writable<ChartData>(
     {
@@ -96,13 +95,6 @@
 </script>
 
 <HeaderRow></HeaderRow>
-<br/>
-<br/>
-
-{#if $isSmallDevice}
-   <br/>
-   <br/>
-{/if}
 
 {#if !$mapData.children.length}
    <Paper>
