@@ -45,7 +45,7 @@ h1 {
   padding: 2em;
 }
 
-#app {
+#svelte {
   --app-padding: 0.5rem;
   min-width: calc(98% - var(--app-padding) * 2);
   max-width: calc(98% - var(--app-padding) * 2);
@@ -89,4 +89,14 @@ h1 {
   --border-focused: solid 1px var(--svelteui-colors-green800);
   --border-hover: solid 1px var(--svelteui-colors-green700);
   --border: solid 1px transparent;
+}
+
+
+.inner-icon-path-color {
+  svg {
+    path {
+      stroke: currentColor;
+      fill: currentColor;
+    }
+  }
 }

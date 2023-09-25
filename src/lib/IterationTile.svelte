@@ -1,8 +1,8 @@
 <script lang="ts">
   import {Paper, Tabs} from "@svelteuidev/core";
   import InterestDailyHistory from "./InterestDailyHistory.svelte";
-  import type {IterationResult} from "./logic/types";
-  import IterationDetail from "./reuseable-parts/IterationDetail.svelte";
+  import type {IterationResult} from "./apps/calculator/logic/types.ts";
+  import IterationDetail from "./reusable-parts/IterationDetail.svelte";
 
   const Tab = Tabs.Tab;
 

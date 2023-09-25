@@ -1,7 +1,7 @@
 <script lang="ts">
   import {ActionIcon, Alert, Code, CopyIcon, Modal} from "@svelteuidev/core";
-  import {showTippingModal} from "../logic/store";
-  import {modalSize} from "../logic/computed";
+  import {showTippingModal} from '@pulse/shared/globalState';
+  import {modalSize} from "@pulse/shared/computed.ts";
   import {copyText} from 'svelte-copy';
   import wallet from "../../assets/wallet.png";
 

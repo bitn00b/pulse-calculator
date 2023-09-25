@@ -1,7 +1,6 @@
 <script lang="ts">
   import AnimatedFlipboardText from "./AnimatedFlipboardText.svelte";
-  import {formatNumberUSD} from "../logic/utils";
-  import {formatNumber} from "../logic/utils.js";
+  import {formatNumber, formatNumberUSD} from "@pulse/shared/utils";
 
   export let animate = false;
   export let number: number;
@@ -15,17 +14,17 @@
 </script>
 
 <style>
-  span {
-    font-variant-numeric: tabular-nums;
-  }
+    span {
+        font-variant-numeric: tabular-nums;
+    }
 </style>
 
 {#if animate}
-  {#key formattedNumber}
-    <AnimatedFlipboardText>
-      {prefix}{formattedNumber}{suffix}
-    </AnimatedFlipboardText>
-  {/key}
+   {#key formattedNumber}
+      <AnimatedFlipboardText>
+         {prefix}{formattedNumber}{suffix}
+      </AnimatedFlipboardText>
+   {/key}
 {:else}
-  <span>{prefix}{formattedNumber}{suffix}</span>
+   <span>{prefix}{formattedNumber}{suffix}</span>
 {/if}

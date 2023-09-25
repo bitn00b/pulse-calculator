@@ -1,13 +1,16 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
+import {defineConfig} from 'vite'
+import {svelte} from '@sveltejs/vite-plugin-svelte'
+import tsconfigPaths from "vite-tsconfig-paths";
+
+const PLUGINS = () => [tsconfigPaths(), svelte()]
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "/pulse-calculator/",
-  plugins: [svelte()],
-   worker: {
+  plugins: PLUGINS(),
+  worker: {
     format: 'es',
-    plugins: [svelte()],
+    plugins: PLUGINS(),
     rollupOptions: {
       output: {
         assetFileNames: 'assets/worker_asset-[name].[ext]',
@@ -15,5 +18,5 @@ export default defineConfig({
         entryFileNames: 'assets/worker_entry-[name].js',
       },
     },
-  },
+  }
 })

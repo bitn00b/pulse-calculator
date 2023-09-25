@@ -2,8 +2,8 @@
   import {ActionIcon, Modal, UnstyledButton} from "@svelteuidev/core";
 
   import {Gear} from 'radix-icons-svelte';
-  import SettingPanel from "./modes/calc/SettingPanel.svelte";
-  import {modalSize} from "./logic/computed";
+  import SettingPanel from "./apps/calculator/modes/calc/SettingPanel.svelte";
+  import {modalSize} from "@pulse/shared/computed.ts";
   import SettingsReadOnlyPanel from "./SettingsReadOnlyPanel.svelte";
 
   let opened = false;

@@ -1,13 +1,12 @@
 <script lang="ts">
   import FormattedNumber from "./components/FormattedNumber.svelte";
   import FixedHeaderTable from "./components/FixedHeaderTable.svelte";
-  import type {IterationResult} from "./logic/types";
-  import {dateFormat, startDay} from "./logic/store.js";
+  import type {IterationResult} from "./apps/calculator/logic/types.ts";
+  import {dateFormat, startDay} from "./apps/calculator/logic/store.js";
   import dayjs from "dayjs";
   import LocalizedFormat from "dayjs/plugin/localizedFormat";
-  import {createChunks} from "./logic/utils";
-  import {sumPropertyOfArray} from "./logic/utils.js";
-
+  import {createChunks} from "@pulse/shared/utils.ts";
+  import {sumPropertyOfArray} from "@pulse/shared/utils.js";
 
   export let iteration: IterationResult;
 
