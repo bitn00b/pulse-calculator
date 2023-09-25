@@ -27,6 +27,7 @@
   import {InfoCircled} from "radix-icons-svelte";
   import {increaseWenModeCounter} from "../../logic/tracking-state.ts";
   import {push} from "@pulse/shared/svelte-utils.ts";
+  import LoadingMessage from "@pulse/reusable-parts/LoadingMessage.svelte";
 
   const {Col: GridCol} = Grid;
 
@@ -56,13 +57,7 @@
 
     const result: IterationResult[] = ev.data;
 
-    console.info('received data', result);
-
     const foundIteration = findIterationWhenProfitIsAbove(result, $wenModeTargetProfitAmountSelected);
-
-    console.info({
-      foundIteration
-    })
 
     if (foundIteration.iteration !== -1) {
       push(foundForPercent, {
@@ -187,6 +182,10 @@
       These are not results for your selected settings.
    </Alert>
    <br/>
+{/if}
+
+{#if calculationInProgress}
+   <LoadingMessage/>
 {/if}
 
 <Grid>

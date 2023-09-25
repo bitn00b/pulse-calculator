@@ -49,3 +49,20 @@ export function sumPropertyOfArray<TElement>(source: TElement[], chooseProp: (el
     return prev + chooseProp(cur);
   }, 0);
 }
+
+
+function RNG(seed) {
+  var m_as_number = 2 ** 53 - 111
+  var m = 2n ** 53n - 111n
+  var a = 5667072534355537n
+  var s = BigInt(seed) % m
+  return function () {
+    return Number(s = s * a % m) / m_as_number
+  }
+}
+
+const myRandomGenerator = RNG(Date.now());
+
+export function randomNumberBetweenZeroAnd(max: number) {
+  return Math.floor(myRandomGenerator() * (max + 1));
+}

@@ -8,7 +8,7 @@ import type {
 import {feesConstant} from "./types.ts";
 import {nanoid} from "nanoid"; // todo maybe replace it by custom code
 // @ts-ignore
-import {averageOfNumbers, sumPropertyOfArray} from "@pulse/shared/utils.ts";
+import {averageOfNumbers, randomNumberBetweenZeroAnd, sumPropertyOfArray} from "@pulse/shared/utils.ts";
 import {getDaysMeta} from "./constants.ts";
 
 const VFX_SELL_TAX = feesConstant.vfxSell / 100;
@@ -25,22 +25,6 @@ function setAdditionalDepositsDefaults(additionalDeposits: AdditionalDepositsSet
   if (!additionalDeposits.additionalLimit) {
     additionalDeposits.additionalLimit = 0;
   }
-}
-
-function RNG(seed) {
-  var m_as_number = 2 ** 53 - 111
-  var m = 2n ** 53n - 111n
-  var a = 5667072534355537n
-  var s = BigInt(seed) % m
-  return function () {
-    return Number(s = s * a % m) / m_as_number
-  }
-}
-
-const myRandomGenerator = RNG(Date.now());
-
-function randomNumberBetweenZeroAnd(max: number) {
-  return Math.floor(myRandomGenerator() * (max + 1));
 }
 
 export function interestForIterations(

@@ -3,7 +3,7 @@
 
   import Treemap from 'treemap-chart';
   import {get, writable} from "svelte/store";
-  import {Center, Loader, Paper} from "@svelteuidev/core";
+  import {Paper} from "@svelteuidev/core";
   import {useDebounce} from "@svelteuidev/composables";
   import {type ChartData, stringToColor} from "./pulse-map-utils";
   import {getWalletInformationsByChunk, getWalletList, type WalletType} from "./pulse-contract";
@@ -11,6 +11,7 @@
   import {SimpleTable} from "@a-luna/svelte-simple-tables";
   import {columnSettings, tableSettings} from "./pulse-table-settings";
   import HeaderRow from "./HeaderRow.svelte";
+  import LoadingMessage from "@pulse/reusable-parts/LoadingMessage.svelte";
 
   const mapData = writable<ChartData>(
     {
@@ -97,11 +98,7 @@
 <HeaderRow></HeaderRow>
 
 {#if !$mapData.children.length}
-   <Paper>
-      <Center>
-         <Loader variant='bars'/>
-      </Center>
-   </Paper>
+   <LoadingMessage/>
 {:else }
    <Paper use={[[watchResize, debouncedResize]]}>
       <div bind:this={divEl}></div>
