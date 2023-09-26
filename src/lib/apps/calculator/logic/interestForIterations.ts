@@ -60,10 +60,8 @@ export function interestForIterations(
   for (let iteration = 1; iteration <= iterationCount; iteration++) {
     const startOfIteration = initial;
 
-    const daysToCalculate = iteration === 1 && !isVIP
-      ? (firstIterationDays < maxDays ? maxDays : firstIterationDays) // if the first iteration setting is lower than the 70
-      : maxDays;
-
+    const daysToCalculate = (iteration === 1 &&
+      firstIterationDays < maxDays) ? maxDays : firstIterationDays
     const interests: InterestEntry[] = [];
 
     let profitUntilNow = 0;

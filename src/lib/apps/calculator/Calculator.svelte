@@ -13,6 +13,7 @@
   import VfxButtons from "../../reusable-parts/VfxButtons.svelte";
   import TaxFeeBreakdownNew from "../../reusable-parts/TaxFeeBreakdownTable.svelte";
   import FeeBreakdownModal from "./FeeBreakdownModal.svelte";
+  import ShowAnkrGasChangeModalButton from "@pulse/reusable-parts/ShowAnkrGasChangeModalButton.svelte";
 
 
   type ComponentsByModeType = {
@@ -32,10 +33,11 @@
       resultsPanel: DetailsColumnWenMode
     }
   } satisfies ComponentsByModeType
-
 </script>
 
 <HeaderRow/>
+
+<ShowAnkrGasChangeModalButton/>
 
 <Stack>
    <Grid>

@@ -23,7 +23,8 @@
     iterationsList,
     nonVIPDays,
     normalDaysList,
-    percentList
+    percentList,
+    VIPDays
   } from "../../logic/constants.ts";
 
   // noinspection ES6UnusedImports
@@ -95,6 +96,13 @@
          {#if !$isVIP}
             <GridCol xs={12} md={6} style="align-self: end;padding-bottom: 0.75rem;">
                <NativeSelect data={nonVIPDays}
+                             label="First Iteration"
+                             bind:value={$firstIterationDays}
+               />
+            </GridCol>
+         {:else}
+            <GridCol xs={12} md={6} style="align-self: end;padding-bottom: 0.75rem;">
+               <NativeSelect data={VIPDays}
                              label="First Iteration"
                              bind:value={$firstIterationDays}
                />

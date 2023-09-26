@@ -5,6 +5,7 @@
   import TippingModal from "./lib/modals/TippingModal.svelte";
   import FloatingFooter from "./lib/FloatingFooter.svelte";
   import LoadingMessage from "@pulse/reusable-parts/LoadingMessage.svelte";
+  import AnkrGasChangeModal from "./lib/modals/AnkrGasChangeModal.svelte";
 
   const routes = {
     '/': wrap({
@@ -28,4 +29,5 @@
 
    <FloatingFooter/>
    <TippingModal/>
+   <AnkrGasChangeModal/>
 </SvelteUIProvider>

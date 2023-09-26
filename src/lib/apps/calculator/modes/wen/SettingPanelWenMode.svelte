@@ -10,8 +10,8 @@
     isVIP,
     iterationDays,
     wenModeTargetProfitAmountSelected
-  } from "../../logic/store.ts";
-  import {additionalDepositTypes, nonVIPDays, normalDaysList} from "../../logic/constants.ts";
+  } from "../../logic/store";
+  import {additionalDepositTypes, nonVIPDays, normalDaysList, VIPDays} from "../../logic/constants";
 
   // noinspection ES6UnusedImports
   import RangeSlider from "svelte-range-slider-pips";
@@ -43,6 +43,13 @@
    {#if !$isVIP}
       <GridCol xs={12} md={6} style="align-self: end;padding-bottom: 0.75rem;">
          <NativeSelect data={nonVIPDays}
+                       label="First Iteration"
+                       bind:value={$firstIterationDays}
+         />
+      </GridCol>
+   {:else}
+      <GridCol xs={12} md={6} style="align-self: end;padding-bottom: 0.75rem;">
+         <NativeSelect data={VIPDays}
                        label="First Iteration"
                        bind:value={$firstIterationDays}
          />

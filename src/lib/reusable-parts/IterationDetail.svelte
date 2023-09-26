@@ -210,6 +210,13 @@
             </ActionIcon>
          </td>
       </tr>
+      <tr>
+         <td colspan="2">
+            <Text size='sm'>
+               ( Already removed from Profit )
+            </Text>
+         </td>
+      </tr>
    </table>
 
 </div>

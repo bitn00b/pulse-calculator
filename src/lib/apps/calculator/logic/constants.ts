@@ -33,6 +33,22 @@ export const nonVIPDays = [
   }
 ];
 
+
+export const VIPDays = [
+  {
+    label: '100 Days',
+    value: '100'
+  },
+  {
+    label: '110 Days - Pulse VIP - Raffle participants',
+    value: '110'
+  },
+  {
+    label: '120 Days - Pulse VIP',
+    value: '120'
+  }
+];
+
 export const iterationsList = [1, 2, 3, 4, 6, 12, 18].map(i => ({
   label: i.toString(),
   value: i.toString()

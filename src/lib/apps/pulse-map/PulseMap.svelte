@@ -12,6 +12,7 @@
   import {columnSettings, tableSettings} from "./pulse-table-settings";
   import HeaderRow from "./HeaderRow.svelte";
   import LoadingMessage from "@pulse/reusable-parts/LoadingMessage.svelte";
+  import ShowAnkrGasChangeModalButton from "@pulse/reusable-parts/ShowAnkrGasChangeModalButton.svelte";
 
   const mapData = writable<ChartData>(
     {
@@ -96,6 +97,8 @@
 </script>
 
 <HeaderRow></HeaderRow>
+
+<ShowAnkrGasChangeModalButton/>
 
 {#if !$mapData.children.length}
    <LoadingMessage/>

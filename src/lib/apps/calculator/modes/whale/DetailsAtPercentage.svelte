@@ -53,6 +53,13 @@
             <FormattedNumber animate={$enableAnimations} number={$totalCuts} notation="standard"/>
          </b></td>
       </tr>
+      <tr>
+         <td colspan="2">
+            <Text size='sm'>
+               ( Already removed from Profit )
+            </Text>
+         </td>
+      </tr>
       {#if $withdrawPercentInVFX > 0}
          <tr>
             <td>Total VFX Received worth</td>
