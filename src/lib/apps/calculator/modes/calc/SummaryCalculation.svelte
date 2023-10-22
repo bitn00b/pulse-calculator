@@ -87,7 +87,7 @@
       <tr>
          <td colspan="2">
             <Text size='sm' align='right'>
-               (received back to wallet)
+               (received back to wallet alongside principal)
             </Text>
          </td>
       </tr>
