@@ -14,6 +14,9 @@ export function stringToColor(str: string) {
 export interface ChartData {
   name: string;
   value?: number;
+  profitMade?: number;
+  index?: number;
+  percentOfPool?: number;
   wallet: string;
   walletShort: string;
   isVIP?: boolean;

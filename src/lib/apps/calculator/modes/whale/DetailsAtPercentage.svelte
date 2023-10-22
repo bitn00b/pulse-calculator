@@ -1,5 +1,4 @@
 <script lang="ts">
-
   import {Paper, Text} from "@svelteuidev/core";
   import FormattedNumber from "@pulse/components/FormattedNumber.svelte";
   import {enableAnimations} from "@pulse/shared/settings.ts";
@@ -16,10 +15,11 @@
     withdrawPercentInVFX
   } from "../../logic/store.ts";
   import PrincipalAndProfit from "@pulse/reusable-parts/PrincipalAndProfit.svelte";
-  import type {IterationResult, PrincipalAndProfits} from "../../logic/types.ts";
+  import type {PrincipalAndProfits} from "../../logic/types.ts";
   import {derived} from "svelte/store";
   import {sumPropertyOfArray} from "@pulse/shared/utils.ts";
   import TaxFeeBreakdown from "@pulse/reusable-parts/TaxFeeBreakdownKeyValue.svelte";
+  import type {IterationResult} from "../../logic/pulseTaxStructure.ts";
 
   export let iteration: IterationResult;
 
@@ -48,7 +48,7 @@
          </b></td>
       </tr>
       <tr>
-         <td>Pulse/VFX Cuts</td>
+         <td>Profit Cuts</td>
          <td><b>$
             <FormattedNumber animate={$enableAnimations} number={$totalCuts} notation="standard"/>
          </b></td>
@@ -73,6 +73,13 @@
          <td><b style="color: var(--svelteui-colors-green700)">$
             <FormattedNumber animate={$enableAnimations} number={$totalUSDT} notation="standard"/>
          </b></td>
+      </tr>
+      <tr>
+         <td colspan="2">
+            <Text size='sm' align='right'>
+               (received back to wallet)
+            </Text>
+         </td>
       </tr>
       {#if $stateTax > 0}
          <tr>

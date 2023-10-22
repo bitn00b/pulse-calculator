@@ -5,17 +5,16 @@ import {averageOfNumbers, sumPropertyOfArray} from "@pulse/shared/utils.ts";
 import type {
   AdditionalDepositsSettings,
   CalculatorModes,
-  FeesTotal,
   InterestForIterationSettings,
-  IterationResult,
   MiscSettings,
   WithdrawSettings
 } from "./types.ts";
-import {summarizeFeesOfIterations} from "./types.ts";
 import {increaseCalculationCounter, increaseRandomInterestCounter} from "./tracking-state.ts";
 import {minDatePickerDate} from "@pulse/shared/computed.ts";
 import {localStoredSetting} from "@pulse/shared/setting-functions.ts";
 import {calculateTotalProfit} from "./store-functions.ts";
+import type {FeesTotal, IterationResult} from "./pulseTaxStructure.ts";
+import {summarizeFeesOfIterations} from "./pulseTaxStructure.ts";
 
 // Mode
 
@@ -44,7 +43,7 @@ export const additionalInterval = writable('daily');
 export const additionalLimit = writable(0);
 
 
-export const additionalVolumeBusdAmount = writable(0);
+export const additionalVolumeUsdtAmount = writable(0);
 
 export const stateTax = writable(0);
 
@@ -62,13 +61,13 @@ const additionalDeposits = derived([
   debounce(additionalAmount, 250),
   additionalInterval,
   debounce(additionalLimit, 250),
-  debounce(additionalVolumeBusdAmount, 250),
+  debounce(additionalVolumeUsdtAmount, 250),
 ], values => {
   return {
     additionalAmount: values[0],
     additionalAmountInterval: values[1],
     additionalLimit: values[2],
-    additionalVolumeBusdAmount: values[3]
+    additionalVolumeUsdtAmount: values[3]
   } as AdditionalDepositsSettings;
 });
 
@@ -180,6 +179,9 @@ export const totalCuts = derived(summarizedCuts, fees => fees.total
 );
 
 export const totalAveragePercent = derived(interestPerIteration, iterations => averageOfNumbers(iterations.map(i => i.averagePercent)));
+
+export const totalAveragePercentAfterCut = derived(interestPerIteration, iterations => averageOfNumbers(iterations.map(i => i.averagePercentAfterCut)));
+
 
 export const days = derived(iterationDays, iterationDays => Number(iterationDays));
 export const additionalIntervalLabel = derived(additionalInterval, interval => {

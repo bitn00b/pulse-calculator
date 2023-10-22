@@ -8,8 +8,6 @@
 
   export let principalAndProfit: PrincipalAndProfits;
 
-  export let showAmountAtTheEnd: number;
-
   $: hours = principalAndProfit.days * 24;
 </script>
 
@@ -23,14 +21,12 @@
       </b>
       </td>
    </tr>
-   {#if showAmountAtTheEnd}
-      <tr>
-         <td>End Amount</td>
-         <td><b>
-            <FormattedNumber animate={$enableAnimations} number={showAmountAtTheEnd} notation="standard" prefix="$ "/>
-         </b></td>
-      </tr>
-   {/if}
+   <tr>
+      <td>Amount after {principalAndProfit.days} Days:</td>
+      <td>$
+         <FormattedNumber number={principalAndProfit.principal + principalAndProfit.profit}/>
+      </td>
+   </tr>
    <tr>
       <td>Profit: <b style="color: var(--svelteui-colors-green700)">$
          <FormattedNumber animate={$enableAnimations} number={principalAndProfit.profit / hours} notation="standard"/>

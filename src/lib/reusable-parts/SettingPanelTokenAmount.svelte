@@ -1,6 +1,6 @@
 <script lang="ts">
   import {Box, NativeSelect, Notification, NumberInput, Overlay, Text, TextInput} from "@svelteuidev/core";
-  import {additionalVolumeBusdAmount} from "../apps/calculator/logic/store.ts";
+  import {additionalVolumeUsdtAmount} from "../apps/calculator/logic/store.ts";
   import {enableAnimations} from "@pulse/shared/settings.ts";
   import {
     cachedVfxInfo,
@@ -30,10 +30,10 @@
       });
   }
 
-  $: additionalVolumeBusdAmount.set(($dailyVolume * 0.04) * ($tokenAmount / $tokensThatReceiveRewards));
+  $: additionalVolumeUsdtAmount.set(($dailyVolume * 0.04) * ($tokenAmount / $tokensThatReceiveRewards));
 </script>
 
-<h4 style="margin-bottom: 0">Deposit BUSD Rewards of Daily Volume</h4>
+<h4 style="margin-bottom: 0">Deposit USDT Rewards of Daily Volume</h4>
 
 <br/>
 
@@ -43,7 +43,7 @@
    >
       <br> <br><br>
       <Text class="centered-text" align="center">
-         Disabled until V3 Contract is live.
+         Soon enabled again
       </Text>
    </Overlay>
    <Grid>
@@ -87,7 +87,7 @@
          {#if $dailyVolume && $tokenAmount}
 
             <Notification title="Calculation of Daily deposit based on Token Amount" withCloseButton={false}>
-               BUSD: <b>4%</b> of Volume [
+               USDT: <b>4%</b> of Volume [
                <FormattedNumber prefix="$" number={$dailyVolume}/>
                ] => <b>
 
@@ -104,7 +104,7 @@
                </b> <br/>
                   Circulating Supply: = $VFX <b>
                   <FormattedNumber number={$tokensThatReceiveRewards }/>
-               </b> (Tokens Receiving BUSD Rewards) <br/>
+               </b> (Tokens Receiving USDT Rewards) <br/>
                   <br/>
                   Your Token Amount: $VFX <b>
                   <FormattedNumber number={$tokenAmount} withDecimals={false}/>
@@ -120,7 +120,7 @@
                   <FormattedNumber number={$tokenAmount / $tokensThatReceiveRewards * 100}/>
                   % => <b style="color: var(--svelteui-colors-green700)">
 
-                  <FormattedNumber number={ $additionalVolumeBusdAmount}
+                  <FormattedNumber number={ $additionalVolumeUsdtAmount}
                                    prefix="$"
                                    animate={$enableAnimations}
                   />

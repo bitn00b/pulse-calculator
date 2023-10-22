@@ -4,8 +4,8 @@
   import {isSmallDevice} from "@pulse/shared/computed.ts";
   import TaxFeeBreakdownKeyValue from "../../reusable-parts/TaxFeeBreakdownKeyValue.svelte";
   import TaxFeeBreakdownTable from "../../reusable-parts/TaxFeeBreakdownTable.svelte";
-  import {totalOfFees} from "./logic/types.ts";
   import {Grid, GridCol} from "../../components/Grid";
+  import {totalOfFees} from "./logic/pulseTaxStructure.ts";
 
   $: opened = $showTaxBreakdownModal !== null;
 

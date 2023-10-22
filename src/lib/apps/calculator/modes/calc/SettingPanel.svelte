@@ -81,7 +81,7 @@
          </GridCol>
          <GridCol xs={6} sm={4}>
             <NativeSelect data={percentList}
-                          label="Interest per Day"
+                          label="Interest per Day (before 33% Profit Split)"
                           on:change={(e) => changePercentPerDay(Number(e.target.value))}
                           value={$percentADay}
             />

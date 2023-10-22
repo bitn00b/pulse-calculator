@@ -1,19 +1,16 @@
-import type {
-  AdditionalDepositsSettings,
-  InterestEntry,
-  InterestForIterationSettings,
-  IterationResult,
-  IterationWithdrawAsVFX
-} from "./types.ts";
-import {feesConstant} from "./types.ts";
+import type {AdditionalDepositsSettings, InterestForIterationSettings,} from "./types.ts";
 import {nanoid} from "nanoid"; // todo maybe replace it by custom code
 // @ts-ignore
 import {averageOfNumbers, randomNumberBetweenZeroAnd, sumPropertyOfArray} from "@pulse/shared/utils.ts";
 import {getDaysMeta} from "./constants.ts";
+import {
+  feesConstant,
+  type InterestEntry,
+  type IterationResult,
+  type IterationWithdrawAsVFX
+} from "./pulseTaxStructure.ts";
 
-const VFX_SELL_TAX = feesConstant.vfxSell / 100;
-const PULSE_WITHDRAW_FEE = feesConstant.withdrawFee / 100;
-const DEV_CUT = feesConstant.devCut / 100;
+const PRE_PROFIT_CUT = feesConstant.preProfit / 100;
 const USAGE_FEE = feesConstant.usageFee / 100;
 
 
@@ -67,14 +64,13 @@ export function interestForIterations(
     let profitUntilNow = 0;
 
     let currentValue = startOfIteration;
-    let lastDay: InterestEntry;
 
     for (var day = 1; day <= daysToCalculate; day++) {
       currentDay++;
 
       // region # additional deposits logic
       if (currentValue < MAX_TO_COMPOUND) {
-        currentValue += additionalDeposits.additionalVolumeBusdAmount;
+        currentValue += additionalDeposits.additionalVolumeUsdtAmount;
 
         if (additionalDeposits.additionalLimit === 0 || additionalIntervalCounter <= additionalDeposits.additionalLimit) {
           switch (additionalDeposits.additionalAmountInterval) {
@@ -132,15 +128,13 @@ export function interestForIterations(
         profitOfThisDay = (percentADay - 1) * currentValue;
       }
 
-      const amountBeforeFeeTax = profitOfThisDay;
-
       // First Dev Cut
-      const devCut = profitOfThisDay * DEV_CUT;
-      const after_devCut = profitOfThisDay - devCut;
+      const preProfit = profitOfThisDay * PRE_PROFIT_CUT;
+      const after_preProfit = profitOfThisDay - preProfit;
 
       // Then Usage Fee
-      const usageFee = after_devCut * USAGE_FEE;
-      const after_usageFee = after_devCut - usageFee;
+      const usageFee = after_preProfit * USAGE_FEE;
+      const after_usageFee = after_preProfit - usageFee;
 
       profitOfThisDay = after_usageFee;
 
@@ -156,6 +150,8 @@ export function interestForIterations(
         }
       }
 
+      const percentADayNumber = (percentADay - 1) * 100;
+
       const interestEntry: InterestEntry = {
         day,
         daySinceBegin: currentDay,
@@ -165,17 +161,15 @@ export function interestForIterations(
         profitOfThisDay,
 
         usageFee,
-        devCut,
-        after_devCut,
+        preProfit,
+        after_preProfit,
         after_usageFee,
 
         profitUntilNow,
-        percentADay
+        percentADay,
+        percentADayAfterCut: percentADayNumber - percentADayNumber * PRE_PROFIT_CUT
       };
 
-      // console.info(interestEntry)
-
-      lastDay = interestEntry;
       interests.push(interestEntry);
     }
 
@@ -186,47 +180,38 @@ export function interestForIterations(
 
     if (withdrawSettings?.withdrawPercentInVFX) {
       const amountToWithdrawAsVFX = amountBeforeFeeTax * withdrawSettings.withdrawPercentInVFX / 100;
-      const withdrawFee = amountToWithdrawAsVFX * PULSE_WITHDRAW_FEE;
-      const after_withdrawFee = amountToWithdrawAsVFX - withdrawFee;
 
       amountBeforeFeeTax -= amountToWithdrawAsVFX;
 
       withdrawInVFX = {
         amountBeforeFeeTax: amountAfterAllDays,
-        withdrawFee,
-        after_withdrawFee: after_withdrawFee,
-        amountAfterTaxes: after_withdrawFee,
+        amountAfterTaxes: amountToWithdrawAsVFX,
         remainingAmount: amountBeforeFeeTax
       };
     }
 
-    const withdrawFee = amountBeforeFeeTax * PULSE_WITHDRAW_FEE;
-    const amountAfterWithdrawFee = amountBeforeFeeTax - withdrawFee;
+    const amountAfterWithdrawFee = amountBeforeFeeTax;
 
-    const sellTax = amountAfterWithdrawFee * VFX_SELL_TAX; // TODO create tests xD
-    const amountAfterFees = amountAfterWithdrawFee - sellTax;
-
-    const sumOfDevCut = sumPropertyOfArray(interests, el => el.devCut);
+    const sumOfPreProfit = sumPropertyOfArray(interests, el => el.preProfit);
     const sumOfUsageFee = sumPropertyOfArray(interests, el => el.usageFee);
 
     // console.table(interests);
 
-    const profit = (amountAfterFees + (withdrawInVFX?.amountAfterTaxes ?? 0)) - startOfIteration;
+    const profit = (amountAfterWithdrawFee + (withdrawInVFX?.amountAfterTaxes ?? 0)) - startOfIteration;
 
     const averagePercent = averageOfNumbers(interests.map(i => i.percentADay)) * 100 - 100;
+
+    const averagePercentAfterCut = averageOfNumbers(interests.map(i => i.percentADayAfterCut));
+
 
     result.push({
       uuid: nanoid(),
 
       amounts: {
         amountBeforeFeeTax,
-        devCut: sumOfDevCut,
+        preProfit: sumOfPreProfit,
         usageFee: sumOfUsageFee,
-        withdrawFee,
-        after_withdrawFee: amountAfterWithdrawFee,
-        vfxSell: sellTax,
-        after_vfxSell: amountAfterFees,
-        amountAfterTaxes: amountAfterFees
+        amountAfterTaxes: amountAfterWithdrawFee
       },
 
       withdrawInVFX,
@@ -235,11 +220,14 @@ export function interestForIterations(
       days: daysToCalculate,
       principal: startOfIteration,
       averagePercent,
+      averagePercentAfterCut,
       profit,
     });
 
     // setting the initial for the next iteration
-    initial = amountAfterFees < MAX_TO_COMPOUND ? amountAfterFees : MAX_TO_COMPOUND;
+    initial = amountAfterWithdrawFee < MAX_TO_COMPOUND
+      ? amountAfterWithdrawFee
+      : MAX_TO_COMPOUND;
   }
 
   return result;

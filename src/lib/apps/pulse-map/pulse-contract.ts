@@ -23,14 +23,24 @@ function walletInfoKey(wallet: string) {
 
 const walletInfoTTL = daysToMs(7);
 
+export type WalletData = {
+  amount: number,
+  share: number,
+  expireAt: number,
+  depositedAt: number
+  claimedAt: number
+}
+
 export async function getWalletInformationsByChunk(
   walletAddresses: string[]
 ): Promise<{
   walletAmount: Record<string, number>,
-  walletTypes: Record<string, WalletType>
+  walletTypes: Record<string, WalletType>,
+  walletData: Record<string, WalletData>
 }> {
   const walletAmount: Record<string, number> = {};
   const walletTypes: Record<string, WalletType> = {};
+  const walletData: Record<string, WalletData> = {};
 
   const bscConnection = await web3BscConnection;
   const contractInstance = await pulseContractInstanceAsync;
@@ -43,13 +53,7 @@ export async function getWalletInformationsByChunk(
     walletTypes[walletAddress] = localStoredTTLValue<WalletType>(walletInfoKey(walletAddress))?.value;
   }
 
-  const results = await makeBatchRequest<{
-    amount: number,
-    share: number,
-    expireAt: number,
-    depositedAt: number
-    claimedAt: number
-  }>(bscConnection, callMap, '0x0000000000000000000000000000000000000000');
+  const results = await makeBatchRequest<WalletData>(bscConnection, callMap, '0x0000000000000000000000000000000000000000');
 
   for (const {key, data, error} of results) {
     if (error) {
@@ -57,7 +61,11 @@ export async function getWalletInformationsByChunk(
     }
     const amount = (data.amount ?? 0) / DECIMALS;
 
+    data.amount /= DECIMALS;
+    data.share /= DECIMALS;
+
     walletAmount[key] = amount;
+    walletData[key] = data;
   }
 
   const missingInformations: string[] = [];
@@ -103,7 +111,8 @@ export async function getWalletInformationsByChunk(
 
   return {
     walletAmount,
-    walletTypes
+    walletTypes,
+    walletData
   }
 }
 

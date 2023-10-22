@@ -26,7 +26,7 @@
    A few people mentioned they would like a way to show their appreciation for the work I've done so here it is :)
    <br/>
    <br/>
-   If you wish, you can send any amount of <Code>VFX</Code>, <Code>ETH</Code>, <Code>BNB</Code>, <Code>BUSD</Code>,
+   If you wish, you can send any amount of <Code>VFX</Code>, <Code>ETH</Code>, <Code>BNB</Code>,
    <Code>USDT</Code> to the provided wallet address.
 
    <br/>

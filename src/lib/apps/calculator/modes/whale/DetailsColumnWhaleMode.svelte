@@ -8,12 +8,7 @@
     worker
   } from "../../logic/store.ts";
   import {onDestroy} from "svelte";
-  import type {
-    AdditionalDepositsSettings,
-    InterestForIterationSettings,
-    IterationResult,
-    WithdrawSettings
-  } from "../../logic/types.ts";
+  import type {AdditionalDepositsSettings, InterestForIterationSettings, WithdrawSettings} from "../../logic/types.ts";
   import {get, writable} from "svelte/store";
   import {formatNumberUSD} from "@pulse/shared/utils.ts";
   import {Grid} from "@pulse/components/Grid";
@@ -23,6 +18,7 @@
   import {getDaysMeta} from "../../logic/constants.ts";
   import {calculateTotalProfit} from "../../logic/store-functions.ts";
   import {Button} from "@svelteuidev/core";
+  import type {IterationResult} from "../../logic/pulseTaxStructure.ts";
 
   const {Col: GridCol} = Grid;
 
@@ -117,7 +113,7 @@
       additionalAmount: 0,
       additionalAmountInterval: 'daily',
       additionalLimit: 0,
-      additionalVolumeBusdAmount: 0
+      additionalVolumeUsdtAmount: 0
     };
 
     currentSettingTrigger = {

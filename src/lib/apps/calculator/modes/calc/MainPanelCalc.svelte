@@ -15,7 +15,7 @@
          End Amount: <br/>
 
          <Profit profit={$principalInputDelayed+$totalProfit}></Profit>
-
+         <br/>
          {#if $isSmallDevice}
             <br/>
          {/if}

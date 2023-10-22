@@ -11,7 +11,7 @@
   import MainPanelCalc from "./modes/calc/MainPanelCalc.svelte";
   import MainPanelWen from "./modes/wen/MainPanelWen.svelte";
   import VfxButtons from "../../reusable-parts/VfxButtons.svelte";
-  import TaxFeeBreakdownNew from "../../reusable-parts/TaxFeeBreakdownTable.svelte";
+  import TaxFeeBreakdownTable from "../../reusable-parts/TaxFeeBreakdownTable.svelte";
   import FeeBreakdownModal from "./FeeBreakdownModal.svelte";
   import ShowAnkrGasChangeModalButton from "@pulse/reusable-parts/ShowAnkrGasChangeModalButton.svelte";
 
@@ -63,7 +63,7 @@
             <Text size='sm'>Tax / Fee Overview:</Text>
             <Space h="xs"></Space>
             <Paper>
-               <TaxFeeBreakdownNew></TaxFeeBreakdownNew>
+               <TaxFeeBreakdownTable></TaxFeeBreakdownTable>
             </Paper>
          </div>
       </GridCol>

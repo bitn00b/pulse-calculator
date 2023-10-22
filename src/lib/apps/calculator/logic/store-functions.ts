@@ -1,5 +1,5 @@
 import {sumPropertyOfArray} from "@pulse/shared/utils.ts";
-import type {IterationResult} from "./types.ts";
+import type {IterationResult} from "./pulseTaxStructure.ts";
 
 export function calculateTotalProfit(values: IterationResult[]) {
   return sumPropertyOfArray(values, el => el.profit)

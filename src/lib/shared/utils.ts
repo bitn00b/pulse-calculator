@@ -2,6 +2,7 @@
 
 import nf from '@tuplo/numberfmt';
 
+const nfp3Digits = nf.partial('0,0.000');
 const nfpUSD = nf.partial('0,0.00');
 const nfp = nf.partial('0,0');
 
@@ -11,6 +12,14 @@ export function formatNumberUSD(value: number): string {
   }
 
   return nfpUSD(value);
+}
+
+export function formatNumber3Digits(value: number): string {
+  if (!value) {
+    return '';
+  }
+
+  return nfp3Digits(value);
 }
 
 

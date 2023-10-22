@@ -1,13 +1,13 @@
 <script lang="ts">
-  import {percentADay, showTaxBreakdownModal, stateTax, withdrawPercentInVFX} from "../apps/calculator/logic/store";
+  import {stateTax, summarizedCuts, withdrawPercentInVFX} from "../apps/calculator/logic/store";
   import {enableAnimations} from "@pulse/shared/settings";
-  import {ActionIcon, Divider, Text} from "@svelteuidev/core";
+  import {Divider, Text} from "@svelteuidev/core";
   import PrincipalAndProfit from "./PrincipalAndProfit.svelte";
   import FormattedNumber from "../components/FormattedNumber.svelte";
   import Profit from "./Profit.svelte";
-  import type {IterationResult} from "../apps/calculator/logic/types";
-  import {totalOfFees} from "../apps/calculator/logic/types";
-  import {InfoCircled} from "radix-icons-svelte";
+  import type {IterationResult} from "../apps/calculator/logic/pulseTaxStructure.ts";
+  import {totalOfFees} from "../apps/calculator/logic/pulseTaxStructure.ts";
+  import TaxFeeBreakdownKeyValue from "@pulse/reusable-parts/TaxFeeBreakdownKeyValue.svelte";
 
   export let iteration: IterationResult;
 
@@ -18,33 +18,6 @@
 <div class="details">
    <PrincipalAndProfit principalAndProfit={iteration}/>
 
-   <Divider
-      size='md'
-      variant='dashed'
-      label='Breakdown'
-      labelPosition='center'
-   />
-
-   <table style="width: 100%">
-      {#if $percentADay < 0}
-         <tr>
-            <td>Average Interest:
-            </td>
-            <td><b>
-               <FormattedNumber animate={$enableAnimations}
-                                number={iteration.averagePercent} notation="standard"/>
-               %
-            </b>
-            </td>
-         </tr>
-      {/if}
-      <tr>
-         <td>Amount after {iteration.days} Days:</td>
-         <td>$
-            <FormattedNumber number={iteration.amounts.amountBeforeFeeTax}/>
-         </td>
-      </tr>
-   </table>
 
    {#if iteration.withdrawInVFX}
       <Divider labelPosition='center' size="sm">
@@ -55,30 +28,6 @@
 
       <table style="width: 100%">
          <tr>
-            <td>{$withdrawPercentInVFX}% of $
-               <FormattedNumber number={iteration.withdrawInVFX.amountBeforeFeeTax}/>
-            </td>
-            <td>$
-               <FormattedNumber
-                  number={iteration.withdrawInVFX.amountBeforeFeeTax - iteration.withdrawInVFX.remainingAmount}/>
-            </td>
-         </tr>
-         <tr>
-            <td>Withdraw Fee:</td>
-            <td class="negative-numbers">- $
-               <FormattedNumber number={iteration.withdrawInVFX.withdrawFee}/>
-            </td>
-         </tr>
-         <tr>
-            <td colspan="2">
-               <Text size='sm' align='left'>(5% of $
-                  <FormattedNumber
-                     number={iteration.withdrawInVFX.amountBeforeFeeTax - iteration.withdrawInVFX.remainingAmount}/>
-                  )
-               </Text>
-            </td>
-         </tr>
-         <tr>
             <td>Received in VFX</td>
             <td>= <b style="color: var(--svelteui-colors-blue500)">
                $
@@ -86,6 +35,14 @@
                                 number={iteration.withdrawInVFX.amountAfterTaxes} notation="standard"/>
 
             </b>
+            </td>
+         </tr>
+         <tr>
+            <td colspan="2">
+               <Text size='sm' align='left'>({$withdrawPercentInVFX}% of $
+                  <FormattedNumber number={iteration.withdrawInVFX.amountBeforeFeeTax}/>
+                  )
+               </Text>
             </td>
          </tr>
          <tr>
@@ -98,64 +55,7 @@
 
    {/if}
 
-   <Divider labelPosition='center' size="sm">
-      <div slot='label'>
-         <b>Withdraw to USDT:</b>
-      </div>
-   </Divider>
-
    <table style="width: 100%">
-      <tr>
-         <td>Withdraw Fee:</td>
-         <td class="negative-numbers">- $
-            <FormattedNumber number={iteration.amounts.withdrawFee}/>
-         </td>
-      </tr>
-      <tr>
-         <td colspan="2">
-            <Text size='sm' align='left'>(5% of $
-               <FormattedNumber number={iteration.amounts.amountBeforeFeeTax}/>
-               )
-            </Text>
-         </td>
-      </tr>
-      <tr>
-         <td colspan="2"> = $
-            <FormattedNumber number={iteration.amounts.after_withdrawFee}></FormattedNumber>
-
-         </td>
-      </tr>
-      <tr>
-         <td>Sell Tax:</td>
-         <td class="negative-numbers">- $
-            <FormattedNumber number={iteration.amounts.vfxSell}/>
-         </td>
-      </tr>
-      <tr>
-         <td colspan="2">
-            <Text size='sm' align='left'>(9% of $
-               <FormattedNumber number={iteration.amounts.after_withdrawFee}></FormattedNumber>
-               )
-            </Text>
-         </td>
-      </tr>
-      <tr>
-         <td>Final Amount:</td>
-         <td> = <b>$
-            <FormattedNumber number={iteration.amounts.amountAfterTaxes}/>
-         </b></td>
-      </tr>
-      <tr>
-         <td colspan="2">
-            <br/>
-         </td>
-      </tr>
-      <tr>
-         <td>Profit USDT:</td>
-         <td>
-            <Profit profit={iteration.amounts.amountAfterTaxes-iteration.principal}/>
-         </td>
-      </tr>
       {#if iteration.withdrawInVFX}
          <tr>
             <td>Profit VFX:</td>
@@ -198,27 +98,10 @@
             <br/>
          </td>
       </tr>
-      <tr>
-         <td>Pulse/VFX Cuts:</td>
-         <td class="negative-numbers"><b>$
-            <FormattedNumber
-               number={total.total}/>
-         </b>
-            <ActionIcon variant="default" style="display: inline-block"
-                        on:click={() => $showTaxBreakdownModal = fees} size={30}>
-               <InfoCircled/>
-            </ActionIcon>
-         </td>
-      </tr>
-      <tr>
-         <td colspan="2">
-            <Text size='sm'>
-               ( Already removed from Profit )
-            </Text>
-         </td>
-      </tr>
    </table>
 
+   <br/>
+   <TaxFeeBreakdownKeyValue fees={$summarizedCuts} fullWidth={true}/>
 </div>
 <style lang="scss">
 

@@ -1,16 +1,15 @@
 <script lang="ts">
 
-  import {ActionIcon, Paper, Text} from "@svelteuidev/core";
+  import {Paper, Text} from "@svelteuidev/core";
   import FormattedNumber from "../../../../components/FormattedNumber.svelte";
   import {enableAnimations} from "@pulse/shared/settings";
   import {
     interestPerIteration,
     principalInputDelayed,
-    showTaxBreakdownModal,
     stateTax,
     summarizedCuts,
     totalAveragePercent,
-    totalCuts,
+    totalAveragePercentAfterCut,
     totalDays,
     totalProfit,
     totalUSDT,
@@ -21,8 +20,7 @@
   import type {PrincipalAndProfits} from "../../logic/types";
   import {derived} from "svelte/store";
   import {sumPropertyOfArray} from "@pulse/shared/utils";
-  import TaxFeeBreakdown from "@pulse/reusable-parts/TaxFeeBreakdownKeyValue.svelte";
-  import {InfoCircled} from "radix-icons-svelte";
+  import TaxFeeBreakdownKeyValue from "@pulse/reusable-parts/TaxFeeBreakdownKeyValue.svelte";
 
   $: principalAndProfit = {
     principal: $principalInputDelayed,
@@ -32,7 +30,7 @@
 
   $: totalStateTax = derived(interestPerIteration, values => sumPropertyOfArray(values, el => el.profit * $stateTax / 100));
 
-  $: amountAtTheEnd = $interestPerIteration.at(-1)?.amounts.amountAfterTaxes;
+  $: amountAtTheEnd = $principalInputDelayed + $totalProfit;
 </script>
 
 <Paper>
@@ -47,6 +45,31 @@
             %
          </b></td>
       </tr>
+      <tr>
+         <td colspan="2">
+            <Text size='sm' align='right'>
+               (before 33% Profit Split)
+            </Text>
+         </td>
+      </tr>
+      <tr>
+         <td></td>
+         <td><b>
+            <FormattedNumber animate={$enableAnimations} threeDigits={true}
+                             number={$totalAveragePercentAfterCut}/>
+            %
+         </b></td>
+      </tr>
+      <tr>
+         <td colspan="2">
+            <Text size='sm' align='right'>
+               (after 33% Profit Split)
+            </Text>
+         </td>
+      </tr>
+      <tr>
+         <td>&nbsp;</td>
+      </tr>
       {#if $withdrawPercentInVFX > 0}
          <tr>
             <td>Total VFX Received worth</td>
@@ -60,6 +83,13 @@
          <td><b style="color: var(--svelteui-colors-green700)">$
             <FormattedNumber animate={$enableAnimations} number={$totalUSDT} notation="standard"/>
          </b></td>
+      </tr>
+      <tr>
+         <td colspan="2">
+            <Text size='sm' align='right'>
+               (received back to wallet)
+            </Text>
+         </td>
       </tr>
       {#if $stateTax > 0}
          <tr>
@@ -85,28 +115,11 @@
             <br/>
          </td>
       </tr>
-      <tr>
-         <td>Pulse/VFX Cuts</td>
-         <td><b>$
-            <FormattedNumber animate={$enableAnimations} number={$totalCuts} notation="standard"/>
-         </b>
-            <ActionIcon variant="default" style="display: inline-block"
-                        on:click={() => $showTaxBreakdownModal = $summarizedCuts} size={30}>
-               <InfoCircled/>
-            </ActionIcon>
-         </td>
-      </tr>
-      <tr>
-         <td colspan="2">
-            <Text size='sm'>
-               ( Already removed from Profit )
-            </Text>
-         </td>
-      </tr>
    </table>
 
    <br/>
-   <TaxFeeBreakdown fees={$summarizedCuts} total={$totalCuts}/>
+
+   <TaxFeeBreakdownKeyValue fees={$summarizedCuts} fullWidth={true}/>
 
    <br/>
    More stats will be added Soon<sup>TM</sup> :) <br/>

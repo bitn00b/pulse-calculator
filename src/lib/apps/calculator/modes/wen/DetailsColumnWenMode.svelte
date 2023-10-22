@@ -4,7 +4,7 @@
     additionalAmount,
     additionalInterval,
     additionalLimit,
-    additionalVolumeBusdAmount,
+    additionalVolumeUsdtAmount,
     currentMode,
     firstIterationDays,
     iterationDays,
@@ -17,7 +17,6 @@
     AdditionalAmountInterval,
     AdditionalDepositsSettings,
     InterestForIterationSettings,
-    IterationResult,
     WithdrawSettings
   } from "../../logic/types.ts";
   import {findIterationWhenProfitIsAbove} from "../../logic/store-functions.ts";
@@ -28,6 +27,7 @@
   import {increaseWenModeCounter} from "../../logic/tracking-state.ts";
   import {push} from "@pulse/shared/svelte-utils.ts";
   import LoadingMessage from "@pulse/reusable-parts/LoadingMessage.svelte";
+  import type {IterationResult} from "../../logic/pulseTaxStructure.ts";
 
   const {Col: GridCol} = Grid;
 
@@ -127,7 +127,7 @@
       additionalAmount: get(additionalAmount),
       additionalAmountInterval: get(additionalInterval) as AdditionalAmountInterval,
       additionalLimit: get(additionalLimit),
-      additionalVolumeBusdAmount: get(additionalVolumeBusdAmount)
+      additionalVolumeUsdtAmount: get(additionalVolumeUsdtAmount)
     };
 
     currentSettingTrigger = {
@@ -155,7 +155,7 @@
     || currentSettingTrigger?.additionalDeposits.additionalAmount !== $additionalAmount
     || currentSettingTrigger?.additionalDeposits.additionalAmountInterval !== $additionalInterval
     || currentSettingTrigger?.additionalDeposits.additionalLimit !== $additionalLimit
-    || currentSettingTrigger?.additionalDeposits.additionalVolumeBusdAmount !== $additionalVolumeBusdAmount
+    || currentSettingTrigger?.additionalDeposits.additionalVolumeUsdtAmount !== $additionalVolumeUsdtAmount
     || usedTargetProfitGoal !== $wenModeTargetProfitAmountSelected
   ;
 
